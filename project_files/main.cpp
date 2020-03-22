@@ -3,8 +3,9 @@
 #include <iostream>
 using namespace std;
 
-enum tRoadTileType{CBL,CBR,CTL,CTR,C,SH,SV,TB,TL,TR,TT};
+enum tRoadTileType{CBL=1,CBR,CTL,CTR,C,SH,SV,TB,TL,TR,TT};
 enum tVehicleType{car1=1, car2, car3, car4, car5, car6};
+enum WayPointType{Down=1,Left,Right,Up};
 
 class RoadTile
 {
