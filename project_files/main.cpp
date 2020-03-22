@@ -10,6 +10,7 @@ enum tWayPointdir{Down=1,Left,Right,Up};
 class RoadTile
 {
 	private:
+		tRoadTileType t;
 		float x; //x coordinate of the top left corner of the road tile
 		float y; //y coordinate of the top left corner of the road tile
 		sf::Texture texture; //tile texture object
@@ -23,6 +24,7 @@ class RoadTile
 
 class Vehicle{
 	private:
+		tVehicleType t;
 		float x, y, angle;
 		bool origin_set;
 		sf::Texture texture; 
@@ -34,6 +36,7 @@ class Vehicle{
 };
 
 class Waypoint{
+	tWayPointdir diir;
 	float x; //Global x coordinate of the waypoint
 	float y; //Global y coordinate of the waypoint
 	int dir; //direction of the waypoint (one of the 4 available directions)
@@ -51,7 +54,7 @@ class Waypoint{
 };
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(800, 600), "Traffic Simulator");
+	sf::RenderWindow window(sf::VideoMode(1195,1195), "Traffic Simulator");
  	sf::Texture texture; 
 
 	while (window.isOpen()) //This is the main loop, the simulation should take place within this loop
