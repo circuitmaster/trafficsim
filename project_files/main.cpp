@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 using namespace std;
-
+enum RoadTileType{CBL,CBR,CTL,CTR,C,SH,SV,TB,TL,TR,TT}tRoadTile;
 class RoadTile
 {
 	private:
