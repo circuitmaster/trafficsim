@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 using namespace std;
+//Deneme 123123123
 int main()
 {
 sf::RenderWindow window(sf::VideoMode(800, 600), "Traffic Simulator");
