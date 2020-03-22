@@ -13,6 +13,7 @@ class RoadTile
 		
 	public : 
 		RoadTile(RoadTile type , int row , int col) ;
+		void draw(); 
 		
 };
 
