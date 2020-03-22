@@ -5,7 +5,7 @@ using namespace std;
 
 enum tRoadTileType{CBL=1,CBR,CTL,CTR,C,SH,SV,TB,TL,TR,TT};
 enum tVehicleType{car1=1, car2, car3, car4, car5, car6};
-enum WayPointType{Down=1,Left,Right,Up};
+enum tWayPointdir{Down=1,Left,Right,Up};
 
 class RoadTile
 {
@@ -44,7 +44,7 @@ class Waypoint{
 	sf::Sprite sprite; //waypoint sprite object
 	
 	public:
-		Waypoint(tWaypointDir dir, tRoadTileType type, int row, int col, int idx, int next1, int next2, int next3);
+		Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int idx, int next1, int next2, int next3);
 		int getNext();
 		void getPosition(float &x, float &y, float &dir);
 		void draw();
