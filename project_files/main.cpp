@@ -2,7 +2,10 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 using namespace std;
-enum RoadTileType{CBL,CBR,CTL,CTR,C,SH,SV,TB,TL,TR,TT}tRoadTile;
+
+enum tRoadTileType{CBL,CBR,CTL,CTR,C,SH,SV,TB,TL,TR,TT};
+enum tVehicleType{car1=1, car2, car3, car4, car5, car6};
+
 class RoadTile
 {
 	private:
