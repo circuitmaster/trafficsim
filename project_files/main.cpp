@@ -14,9 +14,10 @@ class RoadTile
 		float x; //x coordinate of the top left corner of the road tile
 		float y; //y coordinate of the top left corner of the road tile
 		sf::Texture texture; //tile texture object
-		sf::Sprite sprite; //tile sprite object
+		 //tile sprite object
 		
 	public: 
+		sf::Sprite sprite;
 		RoadTile(tRoadTileType t, int row , int col);
 		void draw(); 
 		
@@ -66,33 +67,44 @@ Vehicle::Vehicle(tVehicleType t, float x, float y, float angle){
 	this->t = t;
 }
 
+void RoadTile::draw(){
+ 	
+ 	if (!this->texture.loadFromFile("images/roadpieces/corner-topleft.png"))
+    {
+		 cout << "Could not find the image file" << endl;
+	}
+	 
+	this->sprite.setTexture(texture);
+	 //Move car sprite to x,y position
+	this->sprite.setPosition(0, 0);
+	//Draw the car sprite to screen
+}
+
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(1195,1195), "Traffic Simulator");
- 	sf::Texture texture; 
  	
- 	if (!texture.loadFromFile("images/roadpieces/corner-topleft.png"))
-	 {
-	 cout << "Could not find the image file" << endl;
-	 }
-	 sf::Sprite sprite;
-	 sprite.setTexture(texture);
-	 int x = 0;
-	 int y = 0;
-	 int increment = 1; 
 
 	while (window.isOpen()) //This is the main loop, the simulation should take place within this loop
-	 {
-	 // check all the window's events that were triggered since the last iteration of the loop
-	 sf::Event event;
-	 while (window.pollEvent(event))
-	 {
-	 // "close requested" event: we close the window
-	 if (event.type == sf::Event::Closed)
-	 window.close();
-	 }
-	 //Clear window
-	 window.clear(sf::Color::White); 
+	{
+		 // check all the window's events that were triggered since the last iteration of the loop
+		 sf::Event event;
+		 while (window.pollEvent(event))
+		 {
+		 // "close requested" event: we close the window
+		 if (event.type == sf::Event::Closed)
+			 window.close();
+	 	 }
+		 //Clear window
+		 window.clear(sf::Color::White); 
+
+		 RoadTile rt(CTL,1,1); 
+		 rt.draw();
+		 
+		 //Draw the car sprite to screen
+		window.draw(rt.sprite);
+		//Update the display
+		window.display();		
 	}
 	return 0;
 }
