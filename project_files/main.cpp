@@ -68,15 +68,54 @@ Vehicle::Vehicle(tVehicleType t, float x, float y, float angle){
 }
 
 void RoadTile::draw(){
- 	
- 	if (!this->texture.loadFromFile("images/roadpieces/corner-topleft.png"))
-    {
-		 cout << "Could not find the image file" << endl;
+ 	string path = "images/roadpieces/";
+ 	switch(t){
+ 		case CBL:
+ 			path+="corner-bottomleft.png";
+ 			break;
+ 		case CBR:
+ 			path+="corner-bottomright.png";
+ 			break;
+		case CTL:
+			path+="corner-topleft.png";
+			break;
+		case CTR:
+			path+="corner-topright.png";
+			break;
+		case C:
+			path+="corner-cross.png";
+			break;
+		case SH:
+			path+="corner-straight-horizontal.png";
+			break;
+		case SV:
+			path+="corner-straight-vertical.png";
+			break;
+		case TB:
+			path+="corner-t-bottom.png";
+			break;
+		case TL:
+			path+="corner-t-left.png";
+			break;
+		case TR:
+			path+="corner-t-right.png";
+			break;
+		case TT:
+			path+="corner-t-top.png";
+			break;
+		default:
+			break;
 	}
+	
+ 	if (!this->texture.loadFromFile(path))
+	{
+		cout << "Could not find the image file" << endl;
+	}	
+ 	
 	 
 	this->sprite.setTexture(texture);
 	 //Move car sprite to x,y position
-	this->sprite.setPosition(0, 0);
+	this->sprite.setPosition(x, y);
 	//Draw the car sprite to screen
 }
 
@@ -98,11 +137,20 @@ int main()
 		 //Clear window
 		 window.clear(sf::Color::White); 
 
-		 RoadTile rt(CTL,1,1); 
+		 RoadTile rt(CTL,1,1);
+		 RoadTile r2(CTR,1,5); 
+		 RoadTile r3(CBR,5,5);
+		 RoadTile r4(CBL,5,1);
 		 rt.draw();
-		 
+		 r2.draw();
+		 r3.draw();
+		 r4.draw();
+		 		 
 		 //Draw the car sprite to screen
 		window.draw(rt.sprite);
+		window.draw(r2.sprite);
+		window.draw(r3.sprite);
+		window.draw(r4.sprite);
 		//Update the display
 		window.display();		
 	}
