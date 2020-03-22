@@ -52,6 +52,20 @@ class Waypoint{
 		void getPosition(float &x, float &y, float &dir);
 		void draw();
 };
+
+RoadTile::RoadTile(tRoadTileType t, int row , int col){
+	x = (col-1)*239;
+	y= (row-1)*239;
+	this->t = t;
+}
+
+Vehicle::Vehicle(tVehicleType t, float x, float y, float angle){
+	this->x = x;
+	this->y = y;
+	this->angle = angle;
+	this->t = t;
+}
+
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(1195,1195), "Traffic Simulator");
