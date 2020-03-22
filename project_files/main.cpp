@@ -51,6 +51,21 @@ class Waypoint{
 };
 int main()
 {
+	sf::RenderWindow window(sf::VideoMode(800, 600), "Traffic Simulator");
+ 	sf::Texture texture; 
 
+	while (window.isOpen()) //This is the main loop, the simulation should take place within this loop
+	 {
+	 // check all the window's events that were triggered since the last iteration of the loop
+	 sf::Event event;
+	 while (window.pollEvent(event))
+	 {
+	 // "close requested" event: we close the window
+	 if (event.type == sf::Event::Closed)
+	 window.close();
+	 }
+	 //Clear window
+	 window.clear(sf::Color::White); 
+	}
 	return 0;
 }
