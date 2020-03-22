@@ -70,6 +70,16 @@ int main()
 {
 	sf::RenderWindow window(sf::VideoMode(1195,1195), "Traffic Simulator");
  	sf::Texture texture; 
+ 	
+ 	if (!texture.loadFromFile("images/roadpieces/corner-topleft.png"))
+	 {
+	 cout << "Could not find the image file" << endl;
+	 }
+	 sf::Sprite sprite;
+	 sprite.setTexture(texture);
+	 int x = 0;
+	 int y = 0;
+	 int increment = 1; 
 
 	while (window.isOpen()) //This is the main loop, the simulation should take place within this loop
 	 {
