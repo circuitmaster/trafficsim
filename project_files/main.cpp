@@ -11,8 +11,8 @@ class RoadTile
 		sf::Texture texture; //tile texture object
 		sf::Sprite sprite; //tile sprite object
 		
-	public : 
-		RoadTile(RoadTile type , int row , int col) ;
+	public: 
+		RoadTile(tRoadTileType t, int row , int col);
 		void draw(); 
 		
 };
@@ -29,6 +29,22 @@ class Vehicle{
 		void move(float &x, float &y, float &angle);
 };
 
+class Waypoint{
+	float x; //Global x coordinate of the waypoint
+	float y; //Global y coordinate of the waypoint
+	int dir; //direction of the waypoint (one of the 4 available directions)
+	int next1; //Global index of the first alternative next waypoint
+	int next2; //Global index of the second alternative next waypoint
+	int next3; //Global index of the third alternative next waypoint
+	sf::Texture texture; //waypoint texture object
+	sf::Sprite sprite; //waypoint sprite object
+	
+	public:
+		Waypoint(tWaypointDir dir, tRoadTileType type, int row, int col, int idx, int next1, int next2, int next3);
+		int getNext();
+		void getPosition(float &x, float &y, float &dir);
+		void draw();
+};
 int main()
 {
 
