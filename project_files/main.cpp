@@ -3,6 +3,19 @@
 #include <iostream>
 using namespace std;
 
+class RoadTile
+{
+	private:
+		float x; //x coordinate of the top left corner of the road tile
+		float y; //y coordinate of the top left corner of the road tile
+		sf::Texture texture; //tile texture object
+		sf::Sprite sprite; //tile sprite object
+		
+	public : 
+		RoadTile(RoadTile type , int row , int col) ;
+		
+};
+
 class Vehicle{
 	private:
 		float x, y, angle;
