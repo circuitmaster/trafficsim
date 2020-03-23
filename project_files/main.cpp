@@ -182,6 +182,12 @@ void Waypoint::draw(sf::RenderWindow& window){
 			
 			break;
 		case SH:
+			if(idx==0){
+				x += 20;
+				y += 121;
+			}else{
+				x += 172;
+				y += 121;
 			
 			break;
 		case SV:
@@ -218,6 +224,7 @@ void Waypoint::draw(sf::RenderWindow& window){
 	window.draw(this->sprite);
 
 }
+}
 
 int main()
 {
@@ -236,7 +243,7 @@ int main()
 		 //Clear window
 		 window.clear(sf::Color::White); 
 		
-		Waypoint arr[2] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,2,-1,-1)};
+		Waypoint arr[4] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,2,-1,-1),Waypoint(Right,SH,1,2,0,3,-1,-1),Waypoint(Right,SH,1,2,1,4,-1,-1)};
 		
 		
 		 RoadTile r1(CTL,1,1);
@@ -283,9 +290,12 @@ int main()
 		 r19.draw(window);
 		 r20.draw(window);
 		 r21.draw(window);
-		 
-		 arr[0].draw(window);
-		arr[1].draw(window);
+		
+		for(int i=0 ; i<4 ; i++)
+		{
+			arr[i].draw(window);
+		}
+	
 		 		 
 		//Update the display
 		window.display();		
