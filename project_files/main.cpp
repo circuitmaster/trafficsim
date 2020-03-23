@@ -82,25 +82,25 @@ void RoadTile::draw(sf::RenderWindow& window){
 			path+="corner-topright.png";
 			break;
 		case C:
-			path+="corner-cross.png";
+			path+="cross.png";
 			break;
 		case SH:
-			path+="corner-straight-horizontal.png";
+			path+="straight-horizontal.png";
 			break;
 		case SV:
-			path+="corner-straight-vertical.png";
+			path+="straight-vertical.png";
 			break;
 		case TB:
-			path+="corner-t-bottom.png";
+			path+="t-bottom.png";
 			break;
 		case TL:
-			path+="corner-t-left.png";
+			path+="t-left.png";
 			break;
 		case TR:
-			path+="corner-t-right.png";
+			path+="t-right.png";
 			break;
 		case TT:
-			path+="corner-t-top.png";
+			path+="t-top.png";
 			break;
 		default:
 			break;
@@ -139,15 +139,50 @@ int main()
 		 //Clear window
 		 window.clear(sf::Color::White); 
 
-		 RoadTile rt(CTL,1,1);
-		 RoadTile r2(CTR,1,5); 
-		 RoadTile r3(CBR,5,5);
-		 RoadTile r4(CBL,5,1);
+		 RoadTile r1(CTL,1,1);
+		 RoadTile r2(SH,1,2);
+		 RoadTile r3(TT,1,3);
+		 RoadTile r4(SH,1,4);
+		 RoadTile r5(CTR,1,5); 
+		 RoadTile r6(SV,2,1);
+		 RoadTile r7(SV,2,3);
+		 RoadTile r8(SV,2,5);
+		 RoadTile r9(TL,3,1);
+		 RoadTile r10(SH,3,2);
+		 RoadTile r11(C,3,3);
+		 RoadTile r12(SH,3,4);
+		 RoadTile r13(TR,3,5);
+		 RoadTile r14(SV,4,1);
+		 RoadTile r15(SV,4,3);
+		 RoadTile r16(SV,4,5);
+		 RoadTile r17(CBL,5,1);
+		 RoadTile r18(SH,5,2);
+		 RoadTile r19(TB,5,3);
+		 RoadTile r20(SH,5,4);
+		 RoadTile r21(CBR,5,5);
 		 
-		 rt.draw(window);
+		 
+		 r1.draw(window);
 		 r2.draw(window);
 		 r3.draw(window);
 		 r4.draw(window);
+		 r5.draw(window);
+		 r6.draw(window);
+		 r7.draw(window);
+	     r8.draw(window);
+	     r9.draw(window);
+		 r10.draw(window);
+		 r11.draw(window);
+		 r12.draw(window);
+		 r13.draw(window);
+		 r14.draw(window);
+		 r15.draw(window);
+		 r16.draw(window);
+		 r17.draw(window);
+		 r18.draw(window);
+		 r19.draw(window);
+		 r20.draw(window);
+		 r21.draw(window);
 		 		 
 		//Update the display
 		window.display();		
