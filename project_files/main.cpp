@@ -37,9 +37,11 @@ class Vehicle{
 
 class Waypoint{
 	tWayPointdir diir;
+	tRoadTileType type;
 	float x; //Global x coordinate of the waypoint
 	float y; //Global y coordinate of the waypoint
 	int dir; //direction of the waypoint (one of the 4 available directions)
+	int idx; 
 	int next1; //Global index of the first alternative next waypoint
 	int next2; //Global index of the second alternative next waypoint
 	int next3; //Global index of the third alternative next waypoint
@@ -119,6 +121,17 @@ void RoadTile::draw(sf::RenderWindow& window){
 	
 	//Draw the car sprite to screen
 	window.draw(this->sprite);
+}
+
+Waypoint::Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int idx, int next1, int next2, int next3){
+	diir = dir;
+	this->type = type;
+	x = (col-1)*239;
+	y = (row-1)*239;
+	this->idx = idx;
+	this->next1 = next1;
+	this->next2 = next2;
+	this->next3 = next3;
 }
 
 int main()
