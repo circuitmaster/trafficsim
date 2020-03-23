@@ -32,7 +32,7 @@ class Vehicle{
 	
 	public:
 		Vehicle(tVehicleType t, float x, float y, float angle);
-		void move(float &x, float &y, float &angle);
+		void move(float &x, float &y, float &angle, sf::RenderWindow& window);
 };
 
 class Waypoint{
@@ -66,6 +66,44 @@ Vehicle::Vehicle(tVehicleType t, float x, float y, float angle){
 	this->y = y;
 	this->angle = angle;
 	this->t = t;
+	
+	string path = "images/vehicles/";
+ 	switch(t){
+ 		case CBL:
+ 			path+="car1.png";
+ 			break;
+ 		case CBR:
+ 			path+="car2.png";
+ 			break;
+		case CTL:
+			path+="car3.png";
+			break;
+		case CTR:
+			path+="car4.png";
+			break;
+		case C:
+			path+="car5.png";
+			break;
+		case SH:
+			path+="car6.png";
+			break;
+		default:
+			break;
+		}
+		
+		if (!this->texture.loadFromFile(path))
+		{
+			cout << "Could not find the image file" << endl;
+		}	
+ 	
+	 
+		this->sprite.setTexture(texture);
+		
+		sf::FloatRect boundingBox = sprite.getGlobalBounds();
+	 	//Set the sprite rotation origin to the center of the bounding box
+	 	sprite.setOrigin(sf::Vector2f(boundingBox.width / 2, boundingBox.height / 2)); 
+	 	sprite.setRotation(angle);
+		
 }
 
 void RoadTile::draw(sf::RenderWindow& window){
@@ -137,7 +175,7 @@ Waypoint::Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int i
 void Waypoint::getPosition(float &x, float &y, float &dir){
 	x = this->x;
 	y = this->y;
-	dir = this->dir;
+	dir = 0;
 }
 
 void Waypoint::draw(sf::RenderWindow& window){
@@ -249,23 +287,55 @@ int Waypoint::getNext(){
 	}
 }
 
+void Vehicle::move(float &x, float &y, float &angle, sf::RenderWindow& window){
+	int increment=1;
+	
+	switch((int)this->angle){
+		case 0:
+			if((angle == 90 || angle == 270) && this->x >= x){
+				break;
+			}
+			this->x+=increment;
+			break;
+		case 90:
+			if((angle == 0 || angle == 180) && this->y >= y){
+				break;
+			}
+			this->y+=increment;
+			break;
+		case 180:
+			if((angle == 90 || angle == 270) && this->x <= x){
+				break;
+			}
+			this->x-=increment;
+			break;
+		case 270:
+			if((angle == 0 || angle == 180) && this->y <= y){
+				break;
+			}
+			this->y-=increment;
+			break;
+		default:
+			break;
+	}
+	
+	if(angle>this->angle){
+		this->angle += increment;
+	}else{
+		this->angle -= increment;
+	}
+	
+	sprite.setPosition(this->x, this->y);
+	sprite.setRotation(this->angle);
+	window.draw(sprite);
+	
+}
+
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(1195,1195), "Traffic Simulator");
-	sf::Texture texture;
-	if (!texture.loadFromFile("images/vehicles/car1.png"))
-	{
-	cout << "Could not find the image file" << endl;
-	}
-	sf::Sprite sprite;
-	sprite.setTexture(texture);
-	int x = 118;
-	int y = 218;
+	Vehicle car(car1, 118, 218, 270);
 	
-	sf::FloatRect boundingBox = sprite.getGlobalBounds();
-	 //Set the sprite rotation origin to the center of the bounding box
-	 sprite.setOrigin(sf::Vector2f(boundingBox.width / 2, boundingBox.height / 2)); 
-
 
 	while (window.isOpen()) //This is the main loop, the simulation should take place within this loop
 	{
@@ -282,6 +352,8 @@ int main()
 		
 		Waypoint arr[4] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,-1,-1,-1), Waypoint(Right,SH,1,2,0,1,-1,-1), Waypoint(Right,SH,1,2,1,4,-1,-1)};
 		
+		float x,y,angle;
+		arr[1].getPosition(x,y,angle);
 		
 		 RoadTile r1(CTL,1,1);
 		 RoadTile r2(SH,1,2);
@@ -332,10 +404,8 @@ int main()
 		{
 			arr[i].draw(window);
 		}
-	
-		sprite.setPosition(x, y);
-		sprite.setRotation(270); 
-		window.draw(sprite);
+		
+		car.move(x,y,angle,window); 
 		 		 
 		//Update the display
 		window.display();		
