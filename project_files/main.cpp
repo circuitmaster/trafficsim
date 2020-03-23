@@ -52,7 +52,7 @@ class Waypoint{
 		Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int idx, int next1, int next2, int next3);
 		int getNext();
 		void getPosition(float &x, float &y, float &dir);
-		void draw();
+		void draw(sf::RenderWindow& window);
 };
 
 RoadTile::RoadTile(tRoadTileType t, int row , int col){
@@ -134,10 +134,94 @@ Waypoint::Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int i
 	this->next3 = next3;
 }
 
+void Waypoint::getPosition(float &x, float &y, float &dir){
+	x = this->x;
+	y = this->y;
+	dir = this->dir;
+}
+
+void Waypoint::draw(sf::RenderWindow& window){
+ 	string path = "images/waypoints/";
+ 	switch(diir){
+ 		case Down:
+ 			path+="down.png";
+ 			break;
+ 		case Left:
+ 			path+="left.png";
+ 			break;
+		case Up:
+			path+="up.png";
+			break;
+		case Right:
+			path+="right.png";
+			break;
+		default:
+			break;	
+	}
+	
+	switch(type){
+ 		case CBL:
+ 			
+ 			break;
+ 		case CBR:
+ 			
+ 			break;
+		case CTL:
+			if(idx==0){
+				x += 118;
+				y += 218;
+			}else{
+				x += 218;
+				y += 121;
+			}
+			break;
+		case CTR:
+			
+			break;
+		case C:
+			
+			break;
+		case SH:
+			
+			break;
+		case SV:
+			
+			break;
+		case TB:
+			
+			break;
+		case TL:
+			
+			break;
+		case TR:
+			
+			break;
+		case TT:
+			
+			break;
+		default:
+			break;
+	}
+	
+	if (!this->texture.loadFromFile(path))
+	{
+		cout << "Could not find the image file" << endl;
+	}	
+ 	
+	 
+	this->sprite.setTexture(texture);
+	
+	 //Move car sprite to x,y position
+	this->sprite.setPosition(x, y);
+	
+	//Draw the car sprite to screen
+	window.draw(this->sprite);
+
+}
+
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(1195,1195), "Traffic Simulator");
- 	
 
 	while (window.isOpen()) //This is the main loop, the simulation should take place within this loop
 	{
@@ -151,7 +235,10 @@ int main()
 	 	 }
 		 //Clear window
 		 window.clear(sf::Color::White); 
-
+		
+		Waypoint arr[2] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,2,-1,-1)};
+		
+		
 		 RoadTile r1(CTL,1,1);
 		 RoadTile r2(SH,1,2);
 		 RoadTile r3(TT,1,3);
@@ -196,6 +283,9 @@ int main()
 		 r19.draw(window);
 		 r20.draw(window);
 		 r21.draw(window);
+		 
+		 arr[0].draw(window);
+		arr[1].draw(window);
 		 		 
 		//Update the display
 		window.display();		
