@@ -250,6 +250,20 @@ int Waypoint::getNext(){
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(1195,1195), "Traffic Simulator");
+	sf::Texture texture;
+	if (!texture.loadFromFile("images/vehicles/car1.png"))
+	{
+	cout << "Could not find the image file" << endl;
+	}
+	sf::Sprite sprite;
+	sprite.setTexture(texture);
+	int x = 118;
+	int y = 218;
+	
+	sf::FloatRect boundingBox = sprite.getGlobalBounds();
+	 //Set the sprite rotation origin to the center of the bounding box
+	 sprite.setOrigin(sf::Vector2f(boundingBox.width / 2, boundingBox.height / 2)); 
+
 
 	while (window.isOpen()) //This is the main loop, the simulation should take place within this loop
 	{
@@ -317,6 +331,9 @@ int main()
 			arr[i].draw(window);
 		}
 	
+		sprite.setPosition(x, y);
+		sprite.setRotation(270); 
+		window.draw(sprite);
 		 		 
 		//Update the display
 		window.display();		
