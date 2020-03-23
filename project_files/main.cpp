@@ -14,12 +14,11 @@ class RoadTile
 		float x; //x coordinate of the top left corner of the road tile
 		float y; //y coordinate of the top left corner of the road tile
 		sf::Texture texture; //tile texture object
-		 //tile sprite object
+		sf::Sprite sprite;  //tile sprite object
 		
 	public: 
-		sf::Sprite sprite;
 		RoadTile(tRoadTileType t, int row , int col);
-		void draw(); 
+		void draw(sf::RenderWindow& window); 
 		
 };
 
@@ -67,7 +66,7 @@ Vehicle::Vehicle(tVehicleType t, float x, float y, float angle){
 	this->t = t;
 }
 
-void RoadTile::draw(){
+void RoadTile::draw(sf::RenderWindow& window){
  	string path = "images/roadpieces/";
  	switch(t){
  		case CBL:
@@ -114,9 +113,12 @@ void RoadTile::draw(){
  	
 	 
 	this->sprite.setTexture(texture);
+	
 	 //Move car sprite to x,y position
 	this->sprite.setPosition(x, y);
+	
 	//Draw the car sprite to screen
+	window.draw(this->sprite);
 }
 
 int main()
@@ -141,16 +143,12 @@ int main()
 		 RoadTile r2(CTR,1,5); 
 		 RoadTile r3(CBR,5,5);
 		 RoadTile r4(CBL,5,1);
-		 rt.draw();
-		 r2.draw();
-		 r3.draw();
-		 r4.draw();
+		 
+		 rt.draw(window);
+		 r2.draw(window);
+		 r3.draw(window);
+		 r4.draw(window);
 		 		 
-		 //Draw the car sprite to screen
-		window.draw(rt.sprite);
-		window.draw(r2.sprite);
-		window.draw(r3.sprite);
-		window.draw(r4.sprite);
 		//Update the display
 		window.display();		
 	}
