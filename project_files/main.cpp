@@ -188,7 +188,7 @@ void Waypoint::draw(sf::RenderWindow& window){
 			}else{
 				x += 172;
 				y += 121;
-			
+			}
 			break;
 		case SV:
 			
@@ -224,6 +224,27 @@ void Waypoint::draw(sf::RenderWindow& window){
 	window.draw(this->sprite);
 
 }
+
+int Waypoint::getNext(){
+	int random;
+	if(next3>=0){
+		random=rand()%3;
+	}else if(next2>=0){
+		random=rand()%2;
+	}else{
+		random = 0; 
+	}
+	
+	switch(random){
+		case 0:
+			return next1; 
+		case 1:
+			return next2;
+		case 2:
+			return next3; 
+		default:
+			return 0; 
+	}
 }
 
 int main()
@@ -243,7 +264,7 @@ int main()
 		 //Clear window
 		 window.clear(sf::Color::White); 
 		
-		Waypoint arr[4] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,2,-1,-1),Waypoint(Right,SH,1,2,0,3,-1,-1),Waypoint(Right,SH,1,2,1,4,-1,-1)};
+		Waypoint arr[4] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,2,-1,-1), Waypoint(Right,SH,1,2,0,3,-1,-1), Waypoint(Right,SH,1,2,1,4,-1,-1)};
 		
 		
 		 RoadTile r1(CTL,1,1);
