@@ -224,6 +224,19 @@ void Waypoint::draw(sf::RenderWindow& window){
 			
 			break;
 		case C:
+			if(idx==0){
+				x += 20;
+				y += 121;
+			}else if(idx==1){
+				x += 118;
+				y += 20;
+			}else if(idx == 2){
+				x += 218;
+				y += 121;
+			}else{
+				x += 118;
+				y += 218;
+			}
 			
 			break;
 		case SH:
@@ -249,10 +262,29 @@ void Waypoint::draw(sf::RenderWindow& window){
 			
 			break;
 		case TL:
+			if(idx==0){
+				x += 118;
+				y += 20;
+			}else if(idx==1){
+				x += 218;
+				y += 121;
+			}else{
+				x += 118;
+				y += 218;
+			}
 			
 			break;
 		case TR:
-			
+			if(idx==0){
+				x += 118;
+				y += 20;
+			}else if(idx==1){
+				x += 20;
+				y += 121;
+			}else{
+				x += 118;
+				y += 218;
+			}
 			break;
 		case TT:
 			if(idx==0){
@@ -374,7 +406,7 @@ int main()
 		 //Clear window
 		 window.clear(sf::Color::White); 
 		
-		Waypoint arr[17] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,-1,-1,-1), Waypoint(Right,SH,1,2,0,1,-1,-1), Waypoint(Right,SH,1,2,1,4,-1,-1),Waypoint(Right,TT,1,3,0,1,2,-1),Waypoint(Down,TT,1,3,1,-1,-1,-1),Waypoint(Right,TT,1,3,2,-1,-1,-1),Waypoint(Right,SH,1,4,0,1,-1,-1), Waypoint(Right,SH,1,4,1,4,-1,-1),Waypoint(Right,CTR,1,5,0,1,-1,-1), Waypoint(Down,CTR,1,5,1,-1,-1,-1),Waypoint(Up,SV,2,1,0,1,-1,-1), Waypoint(Up,SV,2,1,1,-1,-1,-1),Waypoint(Down,SV,2,3,0,1,-1,-1), Waypoint(Down,SV,2,3,1,-1,-1,-1),Waypoint(Down,SV,2,5,0,1,-1,-1), Waypoint(Down,SV,2,5,1,-1,-1,-1)};
+		Waypoint arr[31] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,-1,-1,-1), Waypoint(Right,SH,1,2,0,1,-1,-1), Waypoint(Right,SH,1,2,1,4,-1,-1),Waypoint(Right,TT,1,3,0,1,2,-1),Waypoint(Down,TT,1,3,1,-1,-1,-1),Waypoint(Right,TT,1,3,2,-1,-1,-1),Waypoint(Right,SH,1,4,0,1,-1,-1), Waypoint(Right,SH,1,4,1,4,-1,-1),Waypoint(Right,CTR,1,5,0,1,-1,-1), Waypoint(Down,CTR,1,5,1,-1,-1,-1),Waypoint(Up,SV,2,1,0,1,-1,-1), Waypoint(Up,SV,2,1,1,-1,-1,-1),Waypoint(Down,SV,2,3,0,1,-1,-1), Waypoint(Down,SV,2,3,1,-1,-1,-1),Waypoint(Down,SV,2,5,0,1,-1,-1), Waypoint(Down,SV,2,5,1,-1,-1,-1),Waypoint(Up,TL,3,1,0,1,2,-1),Waypoint(Right,TL,3,1,1,-1,-1,-1),Waypoint(Up,TL,3,1,2,-1,-1,-1), Waypoint(Right,SH,3,2,0,1,-1,-1), Waypoint(Right,SH,3,2,1,4,-1,-1),Waypoint(Right,C,3,3,0,1,2,3), Waypoint(Down,C,3,3,1,-1,-1,-1),Waypoint(Left,C,3,3,2,-1,-1,-1), Waypoint(Down,C,3,3,3,-1,-1,-1), Waypoint(Left,SH,3,4,0,1,-1,-1), Waypoint(Left,SH,3,4,1,4,-1,-1),Waypoint(Down,TR,3,5,0,1,2,-1),Waypoint(Left,TR,3,5,1,-1,-1,-1),Waypoint(Up,TR,3,5,2,-1,-1,-1)};
 		
 		float x,y,angle;
 		arr[1].getPosition(x,y,angle);
@@ -424,7 +456,7 @@ int main()
 		 r20.draw(window);
 		 r21.draw(window);
 		
-		for(int i=0 ; i<17 ; i++)
+		for(int i=0 ; i<31 ; i++)
 		{
 			arr[i].draw(window);
 		}
