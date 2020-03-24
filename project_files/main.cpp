@@ -5,7 +5,7 @@ using namespace std;
 
 enum tRoadTileType{CBL=1,CBR,CTL,CTR,C,SH,SV,TB,TL,TR,TT};
 enum tVehicleType{car1=1, car2, car3, car4, car5, car6};
-enum tWayPointdir{Down=1,Left,Right,Up};
+enum tWayPointdir{Down=90,Left=180,Right=0,Up=270};
 
 class RoadTile
 {
@@ -176,7 +176,7 @@ Waypoint::Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int i
 void Waypoint::getPosition(float &x, float &y, float &dir){
 	x = this->x;
 	y = this->y;
-	dir = 0;
+	dir = this->diir;
 }
 
 void Vehicle::getPosition(float &x, float &y){
@@ -375,24 +375,27 @@ int Waypoint::getNext(){
 void Vehicle::move(float &x, float &y, float &angle, sf::RenderWindow& window){
 	int increment=1;
 	
-	
-	if((int)this->angle>=270 && (int)this->angle<=360 && !(angle == 0 && this->y <= y)){
+	if((int)this->angle>=270 && (int)this->angle<=360 && angle==0 && (this->y>y) && this->angle!=angle){
+		//cout << "asagidan saga" << endl;
 		this->y-=increment;
-	}else if((int)this->angle<270 && (int)this->angle>180 && !(angle == 180 && this->y <= y)){
+	}else if((int)this->angle<=270 && (int)this->angle>=180 && angle == 180 && this->y<y && this->angle!=angle){
+		//cout << "asagidan sola" << endl;
 		this->y-=increment;
-	}else if((int)this->angle<90 && (int)this->angle>0 && !(angle == 0 && this->y >= y)){
+	}else if((int)this->angle<=90 && (int)this->angle>=0 && angle == 0 && this->y>y && this->angle!=angle){
 		this->y+=increment;
-	}else if((int)this->angle>90 && (int)this->angle<180 && !(angle == 180 && this->y >= y)){
+	}else if((int)this->angle>=90 && (int)this->angle<=180 && angle == 180 && this->y>y && this->angle!=angle){
 		this->y+=increment;
-	}else if((int)this->angle>0 && (int)this->angle<90 && !(angle == 90 && this->x <= x)){
+	}else if((int)this->angle>=360 && (int)this->angle<=450 && angle==90 && (this->x<x) && this->angle!=angle){
+		cout << "soldan asagi" << endl;
 		this->x+=increment;
-	}else if((int)this->angle<360 && (int)this->angle>270 && !(angle == 270 && this->x <= x)){
+	}else if((int)this->angle<=360 && (int)this->angle>=270 && angle == 270 && (this->x>x) && this->angle!=angle){
+		cout << "asdasdasd" << endl;
 		this->x+=increment;
-	}else if((int)this->angle<180 && (int)this->angle>90 && !(angle == 90 && this->x >= x)){
+	}else if((int)this->angle<=180 && (int)this->angle>=90 && angle == 90 && this->x>x && this->angle!=angle){
 		this->x-=increment;
-	}else if((int)this->angle>180 && (int)this->angle<270 && !(angle == 270 && this->x >= x)){
+	}else if((int)this->angle>=180 && (int)this->angle<=270 && angle == 270 && this->x>x && this->angle!=angle){
 		this->x-=increment;
-	}else if(this->angle==angle){
+	}else if((int)this->angle%360==angle){
 		if((int)angle%360==0)
 			this->x+=increment;
 		else if(angle==180)
@@ -405,8 +408,8 @@ void Vehicle::move(float &x, float &y, float &angle, sf::RenderWindow& window){
 	
 	if((int)angle%360<(int)this->angle%360){
 		this->angle += increment;
-	}else{
-		this->angle -= increment;
+	}else if((int)angle%360>(int)this->angle%360){
+		this->angle += increment;
 	}
 	
 	sprite.setPosition(this->x, this->y);
@@ -417,6 +420,7 @@ void Vehicle::move(float &x, float &y, float &angle, sf::RenderWindow& window){
 
 int main()
 {
+	srand(time(NULL));
 	sf::RenderWindow window(sf::VideoMode(1195,1195), "Traffic Simulator");
 	Vehicle car(car1, 118, 218, 270);
 
@@ -433,7 +437,7 @@ int main()
 		 //Clear window
 		 window.clear(sf::Color::White); 
 		
-		Waypoint arr[48] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,-1,-1,-1), Waypoint(Right,SH,1,2,0,1,-1,-1), Waypoint(Right,SH,1,2,1,4,-1,-1),Waypoint(Right,TT,1,3,0,1,2,-1),Waypoint(Down,TT,1,3,1,-1,-1,-1),Waypoint(Right,TT,1,3,2,-1,-1,-1),Waypoint(Right,SH,1,4,0,1,-1,-1), Waypoint(Right,SH,1,4,1,4,-1,-1),Waypoint(Right,CTR,1,5,0,1,-1,-1), Waypoint(Down,CTR,1,5,1,-1,-1,-1),Waypoint(Up,SV,2,1,0,1,-1,-1), Waypoint(Up,SV,2,1,1,-1,-1,-1),Waypoint(Down,SV,2,3,0,1,-1,-1), Waypoint(Down,SV,2,3,1,-1,-1,-1),Waypoint(Down,SV,2,5,0,1,-1,-1), Waypoint(Down,SV,2,5,1,-1,-1,-1),Waypoint(Up,TL,3,1,0,1,2,-1),Waypoint(Right,TL,3,1,1,-1,-1,-1),Waypoint(Up,TL,3,1,2,-1,-1,-1), Waypoint(Right,SH,3,2,0,1,-1,-1), Waypoint(Right,SH,3,2,1,4,-1,-1),Waypoint(Right,C,3,3,0,1,2,3), Waypoint(Down,C,3,3,1,-1,-1,-1),Waypoint(Left,C,3,3,2,-1,-1,-1), Waypoint(Down,C,3,3,3,-1,-1,-1), Waypoint(Left,SH,3,4,0,1,-1,-1), Waypoint(Left,SH,3,4,1,4,-1,-1),Waypoint(Down,TR,3,5,0,1,2,-1),Waypoint(Left,TR,3,5,1,-1,-1,-1),Waypoint(Up,TR,3,5,2,-1,-1,-1),Waypoint(Up,SV,4,1,0,1,-1,-1), Waypoint(Up,SV,4,1,1,-1,-1,-1),Waypoint(Down,SV,4,3,0,1,-1,-1), Waypoint(Down,SV,4,3,1,-1,-1,-1),Waypoint(Up,SV,4,5,0,1,-1,-1), Waypoint(Up,SV,4,5,1,-1,-1,-1),Waypoint(Up,CBL,5,1,0,1,-1,-1), Waypoint(Left,CBL,5,1,1,-1,-1,-1), Waypoint(Left,SH,5,2,0,1,-1,-1), Waypoint(Left,SH,5,2,1,4,-1,-1),Waypoint(Left,TB,5,3,0,1,2,-1),Waypoint(Down,TB,5,3,1,-1,-1,-1),Waypoint(Right,TB,5,3,2,-1,-1,-1), Waypoint(Right,SH,5,4,0,1,-1,-1), Waypoint(Right,SH,5,4,1,4,-1,-1),Waypoint(Right,CBR,5,5,0,1,-1,-1), Waypoint(Up,CBR,5,5,1,-1,-1,-1)};
+		Waypoint arr[48] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,-1,-1,-1), Waypoint(Right,SH,1,2,0,1,-1,-1), Waypoint(Right,SH,1,2,1,-1,-1,-1),Waypoint(Right,TT,1,3,0,1,2,-1),Waypoint(Down,TT,1,3,1,-1,-1,-1),Waypoint(Right,TT,1,3,2,-1,-1,-1),Waypoint(Right,SH,1,4,0,1,-1,-1), Waypoint(Right,SH,1,4,1,4,-1,-1),Waypoint(Right,CTR,1,5,0,1,-1,-1), Waypoint(Down,CTR,1,5,1,-1,-1,-1),Waypoint(Up,SV,2,1,0,1,-1,-1), Waypoint(Up,SV,2,1,1,-1,-1,-1),Waypoint(Down,SV,2,3,0,1,-1,-1), Waypoint(Down,SV,2,3,1,-1,-1,-1),Waypoint(Down,SV,2,5,0,1,-1,-1), Waypoint(Down,SV,2,5,1,-1,-1,-1),Waypoint(Up,TL,3,1,0,1,2,-1),Waypoint(Right,TL,3,1,1,-1,-1,-1),Waypoint(Up,TL,3,1,2,-1,-1,-1), Waypoint(Right,SH,3,2,0,1,-1,-1), Waypoint(Right,SH,3,2,1,4,-1,-1),Waypoint(Right,C,3,3,0,3,-1,-1), Waypoint(Down,C,3,3,1,3,-1,-1),Waypoint(Left,C,3,3,2,3,-1,-1), Waypoint(Down,C,3,3,3,-1,-1,-1), Waypoint(Left,SH,3,4,0,1,-1,-1), Waypoint(Left,SH,3,4,1,4,-1,-1),Waypoint(Down,TR,3,5,0,1,-1,-1),Waypoint(Left,TR,3,5,1,-1,-1,-1),Waypoint(Up,TR,3,5,2,-1,-1,-1),Waypoint(Up,SV,4,1,0,1,-1,-1), Waypoint(Up,SV,4,1,1,-1,-1,-1),Waypoint(Down,SV,4,3,0,1,-1,-1), Waypoint(Down,SV,4,3,1,-1,-1,-1),Waypoint(Up,SV,4,5,0,1,-1,-1), Waypoint(Up,SV,4,5,1,-1,-1,-1),Waypoint(Up,CBL,5,1,0,1,-1,-1), Waypoint(Left,CBL,5,1,1,-1,-1,-1), Waypoint(Left,SH,5,2,0,1,-1,-1), Waypoint(Left,SH,5,2,1,4,-1,-1),Waypoint(Left,TB,5,3,0,-1,-1,-1),Waypoint(Down,TB,5,3,1,0,2,-1),Waypoint(Right,TB,5,3,2,-1,-1,-1), Waypoint(Right,SH,5,4,0,1,-1,-1), Waypoint(Right,SH,5,4,1,4,-1,-1),Waypoint(Right,CBR,5,5,0,1,-1,-1), Waypoint(Up,CBR,5,5,1,-1,-1,-1)};
 		
 		
 		float x,y,x2,y2,dir,next_x,next_y,next_dir;
@@ -496,11 +500,15 @@ int main()
 			//cout << x << "-" << y << endl;
 			//cout << x2 << "-" << y2 << endl;
 			if(x==x2 && y==y2){
-				cout << "deneme" << endl;
+				//cout << "deneme" << endl;
 				col = (int)(x2/239) + 1; 
 				row = (int)(y2/239) + 1;
 				idx = arr[j].getNext();
-				cout << idx << endl;
+				//cout << idx << endl;
+				if(idx<0){
+					next_dir = dir;
+					break;
+				}
 				for(int k=0; k<48; k++){
 					int cl,rw;
 					float x_,y_,dir_;
@@ -508,7 +516,7 @@ int main()
 					cl = (int)(x_/239) + 1; 
 					rw = (int)(y_/239) + 1;
 					if(arr[k].idx==idx && cl==col && rw==row){
-						cout << x_ << "-" << y_ << endl;
+						//cout << x_ << "-" << y_ << endl;
 						next_x = x_; 
 						next_y = y_;
 						next_dir = dir_;
@@ -518,7 +526,7 @@ int main()
 				break;
 			}
 		}
-		
+		cout << next_dir << endl;
 		car.move(next_x,next_y,next_dir,window); 
 		 		 
 		//Update the display
