@@ -477,7 +477,7 @@ void Vehicle::move2(float &x, float &y, float &angle, sf::RenderWindow& window){
 	}
 	
 	if((int)this->angle>=270 && (int)this->angle<=360 && angle==0 && (this->y>y) && this->angle!=angle){
-		//cout << "asagidan saga" << endl;
+		cout << "asagidan saga" << endl;
 		this->angle += increment;
 	}else if((int)this->angle<=270 && (int)this->angle>=180 && angle == 180 && this->y<y && this->angle!=angle){
 		//cout << "asagidan sola" << endl;
@@ -513,9 +513,10 @@ void Vehicle::move2(float &x, float &y, float &angle, sf::RenderWindow& window){
 	}else if((int)angle%360>(int)this->angle%360){
 		this->angle += increment;
 	}*/
+	float radius = sqrt(pow(x-118,2) + pow(y-218,2))/sqrt(2);
 	
-	this->y = this->x+(cos(this->angle)*(x-(this->x))/sqrt(2)) ;
-	this->y = this->x+(sin(this->angle)*(y-(this->y))/sqrt(2)) ;
+	this->x = 118+(cos(this->angle)) * radius;
+	this->y = 218+(sin(this->angle)) * radius;
 	
 	sprite.setPosition(this->x, this->y);
 	sprite.setRotation(this->angle);
@@ -632,7 +633,7 @@ int main()
 			}
 		}
 		cout << next_dir << endl;
-		car.move2(next_x,next_y,next_dir,window); 
+		car.move(next_x,next_y,next_dir,window); 
 		 		 
 		//Update the display
 		window.display();		
