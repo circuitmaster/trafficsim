@@ -478,24 +478,25 @@ void Vehicle::move2(float &x, float &y, float &angle, sf::RenderWindow& window){
 	
 	if((int)this->angle>=270 && (int)this->angle<=360 && angle==0 && (this->y>y) && this->angle!=angle){
 		//cout << "asagidan saga" << endl;
-		this->y-=increment;
+		this->angle += increment;
 	}else if((int)this->angle<=270 && (int)this->angle>=180 && angle == 180 && this->y<y && this->angle!=angle){
 		//cout << "asagidan sola" << endl;
-		this->y-=increment;
+		this->angle -= increment;
 	}else if((int)this->angle<=90 && (int)this->angle>=0 && angle == 0 && this->y>y && this->angle!=angle){
-		this->y+=increment;
+		this->angle -= increment;
 	}else if((int)this->angle>=90 && (int)this->angle<=180 && angle == 180 && this->y>y && (int)this->angle%360!=angle){
-		this->y+=increment;
+		this->angle += increment;
 	}else if((int)this->angle>=0 && (int)this->angle<=90 && angle==90 && (this->x<x) && this->angle!=angle){
 		cout << "soldan asagi" << endl;
+		this->angle += increment;
 		this->x+=increment;
 	}else if((int)this->angle<=360 && (int)this->angle>=270 && angle == 270 && (this->x>x) && this->angle!=angle){
 		cout << "asdasdasd" << endl;
-		this->x+=increment;
+		this->angle -= increment;
 	}else if((int)this->angle<=180 && (int)this->angle>=90 && angle == 90 && this->x>x && this->angle!=angle){
-		this->x-=increment;
+		this->angle -= increment;
 	}else if((int)this->angle>=180 && (int)this->angle<=270 && angle == 270 && this->x>x && this->angle!=angle){
-		this->x-=increment;
+		this->angle += increment;
 	}else if((int)this->angle%360==angle){
 		if((int)angle%360==0)
 			this->x+=increment;
@@ -512,7 +513,9 @@ void Vehicle::move2(float &x, float &y, float &angle, sf::RenderWindow& window){
 	}else if((int)angle%360>(int)this->angle%360){
 		this->angle += increment;
 	}*/
-	 
+	
+	this->y = this->x+(cos(this->angle)*(x-(this->x))/sqrt(2)) ;
+	this->y = this->x+(sin(this->angle)*(y-(this->y))/sqrt(2)) ;
 	
 	sprite.setPosition(this->x, this->y);
 	sprite.setRotation(this->angle);
