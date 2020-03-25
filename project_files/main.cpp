@@ -1,6 +1,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <cmath>
 using namespace std;
 
 enum tRoadTileType{CBL=1,CBR,CTL,CTR,C,SH,SV,TB,TL,TR,TT};
@@ -33,6 +34,7 @@ class Vehicle{
 	public:
 		Vehicle(tVehicleType t, float x, float y, float angle);
 		void move(float &x, float &y, float &angle, sf::RenderWindow& window);
+		void move2(float &x, float &y, float &angle, sf::RenderWindow& window);
 		void getPosition(float &x, float &y);
 };
 
@@ -375,6 +377,105 @@ int Waypoint::getNext(){
 void Vehicle::move(float &x, float &y, float &angle, sf::RenderWindow& window){
 	int increment=1;
 	
+	if((int)this->angle==270 && angle==0 && this->angle!=angle){
+		if(this->y>y){
+			this->y-=increment;
+		}else{
+			this->angle=angle;
+		}
+		//cout << "asagidan saga" << endl;
+	}else if((int)this->angle==270 && angle==180 && this->angle!=angle){
+		//cout << "asagidan sola" << endl;
+		if(this->y>y){
+			this->y-=increment;
+		}else{
+			this->angle=angle;
+		}
+	}else if((int)this->angle==90 && angle == 0 && this->angle!=angle){
+		if(this->y<y){
+			this->y+=increment;
+		}else{
+			this->angle=angle;
+		}
+		//yukardan saga 
+	}else if((int)this->angle==90 && angle == 180 && this->angle!=angle){
+		if(this->y<y){
+			this->y+=increment;
+		}else{
+			this->angle=angle;
+		}
+		//yukardan sola
+	}else if((int)this->angle==0 && angle==90 && this->angle!=angle){
+		if(this->x<x){
+			this->x+=increment;
+		}else{
+			this->angle=angle;
+		}
+		//soldan asagi
+	}else if((int)this->angle==0 && angle==270 && this->angle!=angle){
+		if(this->x<x){
+			this->x+=increment;
+		}else{
+			this->angle=angle;
+		}
+		//soldan yukari
+	}else if((int)this->angle==180 && angle == 90 && this->angle!=angle){
+		if(this->x>x){
+			this->x-=increment;
+		}else{
+			this->angle=angle;
+		}
+		//sagdan asagi
+	}else if((int)this->angle==180 && angle == 270 && this->angle!=angle){
+		if(this->x>x){
+			this->x-=increment;
+		}else{
+			this->angle=angle;
+		}
+		//sagdan yukari
+	}else if((int)this->angle%360==angle){
+		if((int)angle%360==0)
+			this->x+=increment;
+		else if(angle==180)
+			this->x-=increment;
+		else if(angle==90)
+			this->y+=increment;
+		else if(angle==270)
+			this->y-=increment;
+	}
+	
+	/*if((int)angle%360<(int)this->angle%360){
+		this->angle += increment;
+	}else if((int)angle%360>(int)this->angle%360){
+		this->angle += increment;
+	}*/
+	
+	sprite.setPosition(this->x, this->y);
+	sprite.setRotation(this->angle);
+	window.draw(sprite);
+	
+}
+
+void Vehicle::move2(float &x, float &y, float &angle, sf::RenderWindow& window){
+	int increment=1;
+	
+	switch(int(this->angle)%360){
+		case 0:
+			this->angle = 0;
+			break;
+		case 90:
+			this->angle = 90;
+			break;
+		case 180:
+			this->angle = 180;
+			break;
+		case 270:
+			this->angle = 270;
+			break;
+		default:
+			break;
+	}
+	
 	if((int)this->angle>=270 && (int)this->angle<=360 && angle==0 && (this->y>y) && this->angle!=angle){
 		//cout << "asagidan saga" << endl;
 		this->y-=increment;
@@ -383,9 +484,9 @@ void Vehicle::move(float &x, float &y, float &angle, sf::RenderWindow& window){
 		this->y-=increment;
 	}else if((int)this->angle<=90 && (int)this->angle>=0 && angle == 0 && this->y>y && this->angle!=angle){
 		this->y+=increment;
-	}else if((int)this->angle>=90 && (int)this->angle<=180 && angle == 180 && this->y>y && this->angle!=angle){
+	}else if((int)this->angle>=90 && (int)this->angle<=180 && angle == 180 && this->y>y && (int)this->angle%360!=angle){
 		this->y+=increment;
-	}else if((int)this->angle>=360 && (int)this->angle<=450 && angle==90 && (this->x<x) && this->angle!=angle){
+	}else if((int)this->angle>=0 && (int)this->angle<=90 && angle==90 && (this->x<x) && this->angle!=angle){
 		cout << "soldan asagi" << endl;
 		this->x+=increment;
 	}else if((int)this->angle<=360 && (int)this->angle>=270 && angle == 270 && (this->x>x) && this->angle!=angle){
@@ -406,11 +507,12 @@ void Vehicle::move(float &x, float &y, float &angle, sf::RenderWindow& window){
 			this->y-=increment;
 	}
 	
-	if((int)angle%360<(int)this->angle%360){
+	/*if((int)angle%360<(int)this->angle%360){
 		this->angle += increment;
 	}else if((int)angle%360>(int)this->angle%360){
 		this->angle += increment;
-	}
+	}*/
+	 
 	
 	sprite.setPosition(this->x, this->y);
 	sprite.setRotation(this->angle);
@@ -437,7 +539,7 @@ int main()
 		 //Clear window
 		 window.clear(sf::Color::White); 
 		
-		Waypoint arr[48] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,-1,-1,-1), Waypoint(Right,SH,1,2,0,1,-1,-1), Waypoint(Right,SH,1,2,1,-1,-1,-1),Waypoint(Right,TT,1,3,0,1,2,-1),Waypoint(Down,TT,1,3,1,-1,-1,-1),Waypoint(Right,TT,1,3,2,-1,-1,-1),Waypoint(Right,SH,1,4,0,1,-1,-1), Waypoint(Right,SH,1,4,1,4,-1,-1),Waypoint(Right,CTR,1,5,0,1,-1,-1), Waypoint(Down,CTR,1,5,1,-1,-1,-1),Waypoint(Up,SV,2,1,0,1,-1,-1), Waypoint(Up,SV,2,1,1,-1,-1,-1),Waypoint(Down,SV,2,3,0,1,-1,-1), Waypoint(Down,SV,2,3,1,-1,-1,-1),Waypoint(Down,SV,2,5,0,1,-1,-1), Waypoint(Down,SV,2,5,1,-1,-1,-1),Waypoint(Up,TL,3,1,0,1,2,-1),Waypoint(Right,TL,3,1,1,-1,-1,-1),Waypoint(Up,TL,3,1,2,-1,-1,-1), Waypoint(Right,SH,3,2,0,1,-1,-1), Waypoint(Right,SH,3,2,1,4,-1,-1),Waypoint(Right,C,3,3,0,3,-1,-1), Waypoint(Down,C,3,3,1,3,-1,-1),Waypoint(Left,C,3,3,2,3,-1,-1), Waypoint(Down,C,3,3,3,-1,-1,-1), Waypoint(Left,SH,3,4,0,1,-1,-1), Waypoint(Left,SH,3,4,1,4,-1,-1),Waypoint(Down,TR,3,5,0,1,-1,-1),Waypoint(Left,TR,3,5,1,-1,-1,-1),Waypoint(Up,TR,3,5,2,-1,-1,-1),Waypoint(Up,SV,4,1,0,1,-1,-1), Waypoint(Up,SV,4,1,1,-1,-1,-1),Waypoint(Down,SV,4,3,0,1,-1,-1), Waypoint(Down,SV,4,3,1,-1,-1,-1),Waypoint(Up,SV,4,5,0,1,-1,-1), Waypoint(Up,SV,4,5,1,-1,-1,-1),Waypoint(Up,CBL,5,1,0,1,-1,-1), Waypoint(Left,CBL,5,1,1,-1,-1,-1), Waypoint(Left,SH,5,2,0,1,-1,-1), Waypoint(Left,SH,5,2,1,4,-1,-1),Waypoint(Left,TB,5,3,0,-1,-1,-1),Waypoint(Down,TB,5,3,1,0,2,-1),Waypoint(Right,TB,5,3,2,-1,-1,-1), Waypoint(Right,SH,5,4,0,1,-1,-1), Waypoint(Right,SH,5,4,1,4,-1,-1),Waypoint(Right,CBR,5,5,0,1,-1,-1), Waypoint(Up,CBR,5,5,1,-1,-1,-1)};
+		Waypoint arr[48] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,-1,-1,-1), Waypoint(Right,SH,1,2,0,1,-1,-1), Waypoint(Right,SH,1,2,1,-1,-1,-1),Waypoint(Right,TT,1,3,0,1,2,-1),Waypoint(Down,TT,1,3,1,-1,-1,-1),Waypoint(Right,TT,1,3,2,-1,-1,-1),Waypoint(Right,SH,1,4,0,1,-1,-1), Waypoint(Right,SH,1,4,1,4,-1,-1),Waypoint(Right,CTR,1,5,0,1,-1,-1), Waypoint(Down,CTR,1,5,1,-1,-1,-1),Waypoint(Up,SV,2,1,0,1,-1,-1), Waypoint(Up,SV,2,1,1,-1,-1,-1),Waypoint(Down,SV,2,3,0,1,-1,-1), Waypoint(Down,SV,2,3,1,-1,-1,-1),Waypoint(Down,SV,2,5,0,1,-1,-1), Waypoint(Down,SV,2,5,1,-1,-1,-1),Waypoint(Up,TL,3,1,0,-1,-1,-1),Waypoint(Right,TL,3,1,1,-1,-1,-1),Waypoint(Up,TL,3,1,2,0,1,-1), Waypoint(Right,SH,3,2,0,1,-1,-1), Waypoint(Right,SH,3,2,1,4,-1,-1),Waypoint(Right,C,3,3,0,3,-1,-1), Waypoint(Down,C,3,3,1,3,-1,-1),Waypoint(Left,C,3,3,2,3,-1,-1), Waypoint(Down,C,3,3,3,-1,-1,-1), Waypoint(Left,SH,3,4,0,1,-1,-1), Waypoint(Left,SH,3,4,1,4,-1,-1),Waypoint(Down,TR,3,5,0,1,-1,-1),Waypoint(Left,TR,3,5,1,-1,-1,-1),Waypoint(Up,TR,3,5,2,1,-1,-1),Waypoint(Up,SV,4,1,0,1,-1,-1), Waypoint(Up,SV,4,1,1,-1,-1,-1),Waypoint(Down,SV,4,3,0,1,-1,-1), Waypoint(Down,SV,4,3,1,-1,-1,-1),Waypoint(Up,SV,4,5,0,1,-1,-1), Waypoint(Up,SV,4,5,1,-1,-1,-1),Waypoint(Up,CBL,5,1,0,-1,-1,-1), Waypoint(Left,CBL,5,1,1,0,-1,-1), Waypoint(Left,SH,5,2,0,1,-1,-1), Waypoint(Left,SH,5,2,1,4,-1,-1),Waypoint(Left,TB,5,3,0,-1,-1,-1),Waypoint(Down,TB,5,3,1,0,2,-1),Waypoint(Right,TB,5,3,2,-1,-1,-1), Waypoint(Right,SH,5,4,0,1,-1,-1), Waypoint(Right,SH,5,4,1,4,-1,-1),Waypoint(Right,CBR,5,5,0,1,-1,-1), Waypoint(Up,CBR,5,5,1,-1,-1,-1)};
 		
 		
 		float x,y,x2,y2,dir,next_x,next_y,next_dir;
@@ -527,7 +629,7 @@ int main()
 			}
 		}
 		cout << next_dir << endl;
-		car.move(next_x,next_y,next_dir,window); 
+		car.move2(next_x,next_y,next_dir,window); 
 		 		 
 		//Update the display
 		window.display();		
