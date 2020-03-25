@@ -1,13 +1,17 @@
+//This part is calling libraries for the further usage of some methods
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
+//This part is enumerators for images given
 using namespace std;
 
 enum tRoadTileType{CBL=1,CBR,CTL,CTR,C,SH,SV,TB,TL,TR,TT};
 enum tVehicleType{car1=1, car2, car3, car4, car5, car6};
 enum tWayPointdir{Down=90,Left=180,Right=0,Up=270};
 
+
+// The road tile class
 class RoadTile
 {
 	private:
@@ -23,6 +27,7 @@ class RoadTile
 		
 };
 
+//The vehicle class
 class Vehicle{
 	private:
 		tVehicleType t;
@@ -38,6 +43,7 @@ class Vehicle{
 		void getPosition(float &x, float &y);
 };
 
+// The waypoint class
 class Waypoint{
 	tWayPointdir diir;
 	tRoadTileType type;
@@ -58,18 +64,21 @@ class Waypoint{
 		void draw(sf::RenderWindow& window);
 };
 
+// The constructor for roadtile
 RoadTile::RoadTile(tRoadTileType t, int row , int col){
 	x = (col-1)*239;
 	y= (row-1)*239;
 	this->t = t;
 }
 
+//The constructor for vehicle
 Vehicle::Vehicle(tVehicleType t, float x, float y, float angle){
 	this->x = x;
 	this->y = y;
 	this->angle = angle;
 	this->t = t;
 	
+//This part is for loading the wanted car type
 	string path = "images/vehicles/";
  	switch(t){
  		case CBL:
@@ -101,7 +110,7 @@ Vehicle::Vehicle(tVehicleType t, float x, float y, float angle){
  	
 	 
 		this->sprite.setTexture(texture);
-		
+	
 		sf::FloatRect boundingBox = sprite.getGlobalBounds();
 	 	//Set the sprite rotation origin to the center of the bounding box
 	 	sprite.setOrigin(sf::Vector2f(boundingBox.width / 2, boundingBox.height / 2)); 
@@ -109,6 +118,7 @@ Vehicle::Vehicle(tVehicleType t, float x, float y, float angle){
 		
 }
 
+// The defination of draw function for RoadTile class
 void RoadTile::draw(sf::RenderWindow& window){
  	string path = "images/roadpieces/";
  	switch(t){
@@ -164,6 +174,7 @@ void RoadTile::draw(sf::RenderWindow& window){
 	window.draw(this->sprite);
 }
 
+// The constructor for roadtile
 Waypoint::Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int idx, int next1, int next2, int next3){
 	diir = dir;
 	this->type = type;
@@ -175,17 +186,20 @@ Waypoint::Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int i
 	this->next3 = next3;
 }
 
+// Defination of getposition function for waypoint class
 void Waypoint::getPosition(float &x, float &y, float &dir){
 	x = this->x;
 	y = this->y;
 	dir = this->diir;
 }
 
+// Defination of getposition function for vehicle class
 void Vehicle::getPosition(float &x, float &y){
 	x = this->x;
 	y = this->y;
 }
 
+//// Defination of draw function for waypoint class
 void Waypoint::draw(sf::RenderWindow& window){
  	string path = "images/waypoints/";
  	switch(diir){
@@ -205,6 +219,7 @@ void Waypoint::draw(sf::RenderWindow& window){
 			break;	
 	}
 	
+	// This type draws waypoints onto the specific type of tiles to predetermined coordinates
 	switch(type){
  		case CBL:
  			if(idx==0){
@@ -349,7 +364,7 @@ void Waypoint::draw(sf::RenderWindow& window){
 	window.draw(this->sprite);
 
 }
-
+// Defination of getnext function for waypoint class
 int Waypoint::getNext(){
 	int random;
 	if(next3>=0){
@@ -374,6 +389,7 @@ int Waypoint::getNext(){
 	}
 }
 
+//  Defination of not-smooth move function for waypoint class
 void Vehicle::move(float &x, float &y, float &angle, sf::RenderWindow& window){
 	int increment=1;
 	
@@ -383,9 +399,7 @@ void Vehicle::move(float &x, float &y, float &angle, sf::RenderWindow& window){
 		}else{
 			this->angle=angle;
 		}
-		//cout << "asagidan saga" << endl;
 	}else if((int)this->angle==270 && angle==180 && this->angle!=angle){
-		//cout << "asagidan sola" << endl;
 		if(this->y>y){
 			this->y-=increment;
 		}else{
@@ -397,42 +411,36 @@ void Vehicle::move(float &x, float &y, float &angle, sf::RenderWindow& window){
 		}else{
 			this->angle=angle;
 		}
-		//yukardan saga 
 	}else if((int)this->angle==90 && angle == 180 && this->angle!=angle){
 		if(this->y<y){
 			this->y+=increment;
 		}else{
 			this->angle=angle;
 		}
-		//yukardan sola
 	}else if((int)this->angle==0 && angle==90 && this->angle!=angle){
 		if(this->x<x){
 			this->x+=increment;
 		}else{
 			this->angle=angle;
 		}
-		//soldan asagi
 	}else if((int)this->angle==0 && angle==270 && this->angle!=angle){
 		if(this->x<x){
 			this->x+=increment;
 		}else{
 			this->angle=angle;
 		}
-		//soldan yukari
 	}else if((int)this->angle==180 && angle == 90 && this->angle!=angle){
 		if(this->x>x){
 			this->x-=increment;
 		}else{
 			this->angle=angle;
 		}
-		//sagdan asagi
 	}else if((int)this->angle==180 && angle == 270 && this->angle!=angle){
 		if(this->x>x){
 			this->x-=increment;
 		}else{
 			this->angle=angle;
 		}
-		//sagdan yukari
 	}else if((int)this->angle%360==angle){
 		if((int)angle%360==0)
 			this->x+=increment;
@@ -443,19 +451,14 @@ void Vehicle::move(float &x, float &y, float &angle, sf::RenderWindow& window){
 		else if(angle==270)
 			this->y-=increment;
 	}
-	
-	/*if((int)angle%360<(int)this->angle%360){
-		this->angle += increment;
-	}else if((int)angle%360>(int)this->angle%360){
-		this->angle += increment;
-	}*/
-	
+
 	sprite.setPosition(this->x, this->y);
 	sprite.setRotation(this->angle);
 	window.draw(sprite);
 	
 }
 
+// The defination of smooth move of car (Not working currently) 
 void Vehicle::move2(float &x, float &y, float &angle, sf::RenderWindow& window){
 	int increment=1;
 	
@@ -508,11 +511,6 @@ void Vehicle::move2(float &x, float &y, float &angle, sf::RenderWindow& window){
 			this->y-=increment;
 	}
 	
-	/*if((int)angle%360<(int)this->angle%360){
-		this->angle += increment;
-	}else if((int)angle%360>(int)this->angle%360){
-		this->angle += increment;
-	}*/
 	float radius = sqrt(pow(x-118,2) + pow(y-218,2))/sqrt(2);
 	
 	this->x = 118+(cos(this->angle)) * radius;
@@ -524,11 +522,12 @@ void Vehicle::move2(float &x, float &y, float &angle, sf::RenderWindow& window){
 	
 }
 
+// The main function
 int main()
 {
-	srand(time(NULL));
-	sf::RenderWindow window(sf::VideoMode(1195,1195), "Traffic Simulator");
-	Vehicle car(car1, 118, 218, 270);
+	srand(time(NULL)); //For real randomization 
+	sf::RenderWindow window(sf::VideoMode(1195,1195), "Traffic Simulator"); // The window size-name 
+	Vehicle car(car1, 118, 218, 270); // The car is started from upper-left corner
 
 	while (window.isOpen()) //This is the main loop, the simulation should take place within this loop
 	{
@@ -543,14 +542,15 @@ int main()
 		 //Clear window
 		 window.clear(sf::Color::White); 
 		
+		//Below is the array of every 48 waypoints
 		Waypoint arr[48] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,-1,-1,-1), Waypoint(Right,SH,1,2,0,1,-1,-1), Waypoint(Right,SH,1,2,1,-1,-1,-1),Waypoint(Right,TT,1,3,0,1,2,-1),Waypoint(Down,TT,1,3,1,-1,-1,-1),Waypoint(Right,TT,1,3,2,-1,-1,-1),Waypoint(Right,SH,1,4,0,1,-1,-1), Waypoint(Right,SH,1,4,1,4,-1,-1),Waypoint(Right,CTR,1,5,0,1,-1,-1), Waypoint(Down,CTR,1,5,1,-1,-1,-1),Waypoint(Up,SV,2,1,0,1,-1,-1), Waypoint(Up,SV,2,1,1,-1,-1,-1),Waypoint(Down,SV,2,3,0,1,-1,-1), Waypoint(Down,SV,2,3,1,-1,-1,-1),Waypoint(Down,SV,2,5,0,1,-1,-1), Waypoint(Down,SV,2,5,1,-1,-1,-1),Waypoint(Up,TL,3,1,0,-1,-1,-1),Waypoint(Right,TL,3,1,1,-1,-1,-1),Waypoint(Up,TL,3,1,2,0,1,-1), Waypoint(Right,SH,3,2,0,1,-1,-1), Waypoint(Right,SH,3,2,1,4,-1,-1),Waypoint(Right,C,3,3,0,3,-1,-1), Waypoint(Down,C,3,3,1,3,-1,-1),Waypoint(Left,C,3,3,2,3,-1,-1), Waypoint(Down,C,3,3,3,-1,-1,-1), Waypoint(Left,SH,3,4,0,1,-1,-1), Waypoint(Left,SH,3,4,1,4,-1,-1),Waypoint(Down,TR,3,5,0,1,-1,-1),Waypoint(Left,TR,3,5,1,-1,-1,-1),Waypoint(Up,TR,3,5,2,1,-1,-1),Waypoint(Up,SV,4,1,0,1,-1,-1), Waypoint(Up,SV,4,1,1,-1,-1,-1),Waypoint(Down,SV,4,3,0,1,-1,-1), Waypoint(Down,SV,4,3,1,-1,-1,-1),Waypoint(Up,SV,4,5,0,1,-1,-1), Waypoint(Up,SV,4,5,1,-1,-1,-1),Waypoint(Up,CBL,5,1,0,-1,-1,-1), Waypoint(Left,CBL,5,1,1,0,-1,-1), Waypoint(Left,SH,5,2,0,1,-1,-1), Waypoint(Left,SH,5,2,1,4,-1,-1),Waypoint(Left,TB,5,3,0,-1,-1,-1),Waypoint(Down,TB,5,3,1,0,2,-1),Waypoint(Right,TB,5,3,2,-1,-1,-1), Waypoint(Right,SH,5,4,0,1,-1,-1), Waypoint(Right,SH,5,4,1,4,-1,-1),Waypoint(Right,CBR,5,5,0,1,-1,-1), Waypoint(Up,CBR,5,5,1,-1,-1,-1)};
 		
-		
+		//Some variables for further usage
 		float x,y,x2,y2,dir,next_x,next_y,next_dir;
 		int col,row,idx;
 		car.getPosition(x,y);
 		
-		
+		// Every roadtile in our road
 		 RoadTile r1(CTL,1,1);
 		 RoadTile r2(SH,1,2);
 		 RoadTile r3(TT,1,3);
@@ -573,7 +573,7 @@ int main()
 		 RoadTile r20(SH,5,4);
 		 RoadTile r21(CBR,5,5);
 		 
-		 
+		 // For drawing every roadtile in our road
 		 r1.draw(window);
 		 r2.draw(window);
 		 r3.draw(window);
@@ -596,21 +596,19 @@ int main()
 		 r20.draw(window);
 		 r21.draw(window);
 		
+		//For drawing every waypoint in our road
 		for(int i=0 ; i<48 ; i++)
 		{
 			arr[i].draw(window);
 		}
 		
+		//This part finds which waypoint the car stands now for determining local waypoint and use that waypoints functions. 
 		for(int j=0; j<48; j++){
 			arr[j].getPosition(x2,y2,dir);
-			//cout << x << "-" << y << endl;
-			//cout << x2 << "-" << y2 << endl;
 			if(x==x2 && y==y2){
-				//cout << "deneme" << endl;
 				col = (int)(x2/239) + 1; 
 				row = (int)(y2/239) + 1;
 				idx = arr[j].getNext();
-				//cout << idx << endl;
 				if(idx<0){
 					next_dir = dir;
 					break;
@@ -632,7 +630,7 @@ int main()
 				break;
 			}
 		}
-		cout << next_dir << endl;
+		// Moving the car
 		car.move(next_x,next_y,next_dir,window); 
 		 		 
 		//Update the display
