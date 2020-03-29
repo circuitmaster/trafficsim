@@ -50,6 +50,7 @@ class Waypoint{
 	float x; //Global x coordinate of the waypoint
 	float y; //Global y coordinate of the waypoint
 	int dir; //direction of the waypoint (one of the 4 available directions)
+	int idx; 
 	int next1; //Global index of the first alternative next waypoint
 	int next2; //Global index of the second alternative next waypoint
 	int next3; //Global index of the third alternative next waypoint
@@ -57,9 +58,9 @@ class Waypoint{
 	sf::Sprite sprite; //waypoint sprite object
 	
 	public:
-		int idx; 
 		Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int idx, int next1, int next2, int next3);
 		int getNext();
+		int getIndex();
 		void getPosition(float &x, float &y, float &dir);
 		void draw(sf::RenderWindow& window);
 };
@@ -523,14 +524,15 @@ void Vehicle::move2(float &x, float &y, float &angle, sf::RenderWindow& window,i
 			this->y-=increment;
 	}
 	
-	//float radius = sqrt(pow(x-118,2) + pow(y-218,2))/sqrt(2);
-	
-	
 	
 	sprite.setPosition(this->x, this->y);
 	sprite.setRotation(this->angle);
 	window.draw(sprite);
 	
+}
+
+int Waypoint::getIndex(){
+	return this->idx; 
 }
 
 // The main function
@@ -633,8 +635,7 @@ int main()
 					arr[k].getPosition(x_,y_,dir_);
 					cl = (int)(x_/239) + 1; 
 					rw = (int)(y_/239) + 1;
-					if(arr[k].idx==idx && cl==col && rw==row){
-						//cout << x_ << "-" << y_ << endl;
+					if(arr[k].getIndex()==idx && cl==col && rw==row){
 						next_x = x_; 
 						next_y = y_;
 						next_dir = dir_;
