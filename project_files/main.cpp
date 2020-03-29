@@ -39,7 +39,7 @@ class Vehicle{
 	public:
 		Vehicle(tVehicleType t, float x, float y, float angle);
 		void move(float &x, float &y, float &angle, sf::RenderWindow& window);
-		void move2(float &x, float &y, float &angle, sf::RenderWindow& window);
+		void move2(float &x, float &y, float &angle, sf::RenderWindow& window, int w_x, int w_y);
 		void getPosition(float &x, float &y);
 };
 
@@ -459,7 +459,7 @@ void Vehicle::move(float &x, float &y, float &angle, sf::RenderWindow& window){
 }
 
 // The defination of smooth move of car (Not working currently) 
-void Vehicle::move2(float &x, float &y, float &angle, sf::RenderWindow& window){
+void Vehicle::move2(float &x, float &y, float &angle, sf::RenderWindow& window,int w_x, int w_y){
 	int increment=1;
 	
 	switch(int(this->angle)%360){
@@ -472,6 +472,7 @@ void Vehicle::move2(float &x, float &y, float &angle, sf::RenderWindow& window){
 		case 180:
 			this->angle = 180;
 			break;
+		case -90: 
 		case 270:
 			this->angle = 270;
 			break;
@@ -482,24 +483,43 @@ void Vehicle::move2(float &x, float &y, float &angle, sf::RenderWindow& window){
 	if((int)this->angle>=270 && (int)this->angle<=360 && angle==0 && (this->y>y) && this->angle!=angle){
 		cout << "asagidan saga" << endl;
 		this->angle += increment;
-	}else if((int)this->angle<=270 && (int)this->angle>=180 && angle == 180 && this->y<y && this->angle!=angle){
-		//cout << "asagidan sola" << endl;
+		this->x = x+(sin(this->angle*3.141592653589793238463/180)) * 100;
+		this->y = w_y-(cos(this->angle*3.141592653589793238463/180)) * 97;
+	}else if((int)this->angle<=270 && (int)this->angle>=180 && angle == 180 && this->y>y && this->angle!=angle){
+		cout << "asagidan sola" << endl;
 		this->angle -= increment;
-	}else if((int)this->angle<=90 && (int)this->angle>=0 && angle == 0 && this->y>y && this->angle!=angle){
+		this->x = x-(sin(this->angle*3.141592653589793238463/180)) * 100;
+		this->y = w_y+(cos(this->angle*3.141592653589793238463/180)) * 97;
+	}else if((int)this->angle<=90 && (int)this->angle>=0 && angle == 0 && this->y<y && this->angle!=angle){
+		cout << "yukaridan saga" << endl;
 		this->angle -= increment;
-	}else if((int)this->angle>=90 && (int)this->angle<=180 && angle == 180 && this->y>y && (int)this->angle%360!=angle){
+		this->x = x-(sin(this->angle*3.141592653589793238463/180)) * 100;
+		this->y = w_y+(cos(this->angle*3.141592653589793238463/180)) * 101;
+	}else if((int)this->angle>=90 && (int)this->angle<=180 && angle == 180 && this->y<y && (int)this->angle!=angle){
+		cout << "yukaridan sola" << endl;
 		this->angle += increment;
+		this->x = x+(sin(this->angle*3.141592653589793238463/180)) * 98;
+		this->y = w_y-(cos(this->angle*3.141592653589793238463/180)) * 101;
 	}else if((int)this->angle>=0 && (int)this->angle<=90 && angle==90 && (this->x<x) && this->angle!=angle){
 		cout << "soldan asagi" << endl;
 		this->angle += increment;
-		this->x+=increment;
-	}else if((int)this->angle<=360 && (int)this->angle>=270 && angle == 270 && (this->x>x) && this->angle!=angle){
-		cout << "asdasdasd" << endl;
+		this->x = w_x+(sin(this->angle*3.141592653589793238463/180)) * 98;
+		this->y = y-(cos(this->angle*3.141592653589793238463/180)) * 97;
+	}else if((int)this->angle<=0 && (int)this->angle>=-90 && angle == 270 && (this->x<x) && this->angle!=angle){
+		cout << "soldan yukari" << endl;
 		this->angle -= increment;
+		this->x = w_x-(sin(this->angle*3.141592653589793238463/180)) * 98;
+		this->y = y+(cos(this->angle*3.141592653589793238463/180)) * 97;
 	}else if((int)this->angle<=180 && (int)this->angle>=90 && angle == 90 && this->x>x && this->angle!=angle){
+		cout << "sagdan asagi" << endl;
 		this->angle -= increment;
+		this->x = w_x-(sin(this->angle*3.141592653589793238463/180)) * 100;
+		this->y = y+(cos(this->angle*3.141592653589793238463/180)) * 97;
 	}else if((int)this->angle>=180 && (int)this->angle<=270 && angle == 270 && this->x>x && this->angle!=angle){
+		cout << "sagdan yukari" << endl;
 		this->angle += increment;
+		this->x = w_x+(sin(this->angle*3.141592653589793238463/180)) * 100;
+		this->y = y-(cos(this->angle*3.141592653589793238463/180)) * 97;
 	}else if((int)this->angle%360==angle){
 		if((int)angle%360==0)
 			this->x+=increment;
@@ -511,10 +531,9 @@ void Vehicle::move2(float &x, float &y, float &angle, sf::RenderWindow& window){
 			this->y-=increment;
 	}
 	
-	float radius = sqrt(pow(x-118,2) + pow(y-218,2))/sqrt(2);
+	//float radius = sqrt(pow(x-118,2) + pow(y-218,2))/sqrt(2);
 	
-	this->x = 118+(cos(this->angle)) * radius;
-	this->y = 218+(sin(this->angle)) * radius;
+	
 	
 	sprite.setPosition(this->x, this->y);
 	sprite.setRotation(this->angle);
@@ -528,7 +547,8 @@ int main()
 	srand(time(NULL)); //For real randomization 
 	sf::RenderWindow window(sf::VideoMode(1195,1195), "Traffic Simulator"); // The window size-name 
 	Vehicle car(car1, 118, 218, 270); // The car is started from upper-left corner
-
+	float w_x,w_y;
+	
 	while (window.isOpen()) //This is the main loop, the simulation should take place within this loop
 	{
 		 // check all the window's events that were triggered since the last iteration of the loop
@@ -613,6 +633,8 @@ int main()
 					next_dir = dir;
 					break;
 				}
+				w_x=x2; 
+				w_y=y2;
 				for(int k=0; k<48; k++){
 					int cl,rw;
 					float x_,y_,dir_;
@@ -631,7 +653,7 @@ int main()
 			}
 		}
 		// Moving the car
-		car.move(next_x,next_y,next_dir,window); 
+		car.move2(next_x,next_y,next_dir,window,w_x,w_y); 
 		 		 
 		//Update the display
 		window.display();		
