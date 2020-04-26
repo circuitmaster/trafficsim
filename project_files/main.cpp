@@ -65,6 +65,23 @@ class Waypoint{
 		void draw(sf::RenderWindow& window);
 };
 
+class TrafficLight{
+	float x;
+	float y;
+	float dir;
+	tLightState state;
+	sf:Texture redTexture;
+	sf:Texture greenTexture;
+	sf:Sprite sprite;
+	TrafficLight *next;
+	public:
+		TrafficLight(float x, float y, float dir, tLightState state);
+		void getPosition(float &x, float&y, float &dir);
+		void draw();
+		tLightState getState();
+		void setState(tLightState state);
+};
+
 // The constructor for roadtile
 RoadTile::RoadTile(tRoadTileType t, int row , int col){
 	x = (col-1)*239;
@@ -646,7 +663,7 @@ int main()
 			}
 		}
 		// Moving the car
-		car.move2(next_x,next_y,next_dir,window,,); 
+		car.move2(next_x,next_y,next_dir,window,w_x,w_y); 
 		 		 
 		//Update the display
 		window.display();		
