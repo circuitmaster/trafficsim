@@ -71,14 +71,14 @@ class TrafficLight{
 	float y;
 	float dir;
 	tLightState state;
-	sf:Texture redTexture;
-	sf:Texture greenTexture;
-	sf:Sprite sprite;
+	sf::Texture redTexture;
+	sf::Texture greenTexture;
+	sf::Sprite sprite;
 	TrafficLight *next;
 	public:
 		TrafficLight(float x, float y, float dir, tLightState state);
 		void getPosition(float &x, float&y, float &dir);
-		void draw();
+		void draw(sf::RenderWindow& window);
 		tLightState getState();
 		void setState(tLightState state);
 };
@@ -94,6 +94,31 @@ class TrafficLightGroup{
 		void add(TrafficLight *light) ;
 		void simulate(float timestep) ;
 };
+
+TrafficLight::TrafficLight(float x, float y, float dir, tLightState state){
+	string path = "images/trafficlights/red.png";
+	string path2 = "images/trafficlights/green.png";
+	if (!this->redTexture.loadFromFile(path)||!this->greenTexture.loadFromFile(path2))
+	{
+		cout << "Could not find the image file" << endl;
+	}
+	this->x = x;
+	this->y = y;
+	this->dir = dir;
+	this->state=state;
+}
+
+TrafficLightGroup::TrafficLightGroup(float duration){
+	this->duration = duration;
+}
+
+tLightState TrafficLight::getState(){
+	return this->state;
+}
+
+void TrafficLight::setState(tLightState state){
+	this->state = state;
+}
 
 // The constructor for roadtile
 RoadTile::RoadTile(tRoadTileType t, int row , int col){
@@ -147,6 +172,25 @@ Vehicle::Vehicle(tVehicleType t, float x, float y, float angle){
 	 	sprite.setOrigin(sf::Vector2f(boundingBox.width / 2, boundingBox.height / 2)); 
 	 	sprite.setRotation(angle);
 		
+}
+
+void TrafficLight::getPosition(float &x, float&y, float &dir){
+	x = this->x;
+	y = this->y;
+	dir = this->dir;
+}
+
+void TrafficLight::draw(sf::RenderWindow& window){
+	if(state = Red){
+		this->sprite.setTexture(redTexture);
+	}else{
+		this->sprite.setTexture(greenTexture);
+	}
+	 //Move car sprite to x,y position
+	this->sprite.setPosition(x, y);
+	this->sprite.setRotation(this->dir);
+	//Draw the car sprite to screen
+	window.draw(this->sprite);
 }
 
 // The defination of draw function for RoadTile class
@@ -572,6 +616,11 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(1195,1195), "Traffic Simulator"); // The window size-name 
 	Vehicle car(car1, 118, 218, 270); // The car is started from upper-left corner
 	float w_x,w_y;
+	TrafficLight l1(530,647,90,Red);
+	TrafficLight l2(547,532,180,Red);
+	TrafficLight l3(662,552,270,Red);
+	TrafficLight l4(1025,532,180,Red);
+	TrafficLight l5(1125,655,0,Red);
 	
 	while (window.isOpen()) //This is the main loop, the simulation should take place within this loop
 	{
@@ -639,6 +688,12 @@ int main()
 		 r19.draw(window);
 		 r20.draw(window);
 		 r21.draw(window);
+		 
+		 l1.draw(window);
+		 l2.draw(window);
+		 l3.draw(window);
+		 l4.draw(window);
+		 l5.draw(window);
 		
 		//For drawing every waypoint in our road
 		for(int i=0 ; i<48 ; i++)
