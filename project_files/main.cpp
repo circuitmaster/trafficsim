@@ -17,6 +17,7 @@ class RoadTile
 {
 	private:
 		tRoadTileType t;
+		
 		float x; //x coordinate of the top left corner of the road tile
 		float y; //y coordinate of the top left corner of the road tile
 		sf::Texture texture; //tile texture object
@@ -48,6 +49,7 @@ class Vehicle{
 class Waypoint{
 	tWayPointdir diir;
 	tRoadTileType type;
+	TrafficLight l;
 	float x; //Global x coordinate of the waypoint
 	float y; //Global y coordinate of the waypoint
 	int dir; //direction of the waypoint (one of the 4 available directions)
@@ -59,7 +61,7 @@ class Waypoint{
 	sf::Sprite sprite; //waypoint sprite object
 	
 	public:
-		Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int idx, int next1, int next2, int next3);
+		Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int idx, int next1, int next2, int next3,TrafficLight l);
 		int getNext();
 		int getIndex();
 		void getPosition(float &x, float &y, float &dir);
@@ -284,7 +286,7 @@ void RoadTile::draw(sf::RenderWindow& window){
 }
 
 // The constructor for roadtile
-Waypoint::Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int idx, int next1, int next2, int next3){
+Waypoint::Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int idx, int next1, int next2, int next3,TrafficLight l=NULL){
 	diir = dir;
 	this->type = type;
 	x = (col-1)*239;
@@ -293,6 +295,7 @@ Waypoint::Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int i
 	this->next1 = next1;
 	this->next2 = next2;
 	this->next3 = next3;
+	this->l=l;
 }
 
 // Defination of getposition function for waypoint class
