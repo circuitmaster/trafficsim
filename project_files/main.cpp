@@ -646,7 +646,7 @@ int main()
 			}
 		}
 		// Moving the car
-		car.move2(next_x,next_y,next_dir,window,w_x,w_y); 
+		car.move2(next_x,next_y,next_dir,window,,); 
 		 		 
 		//Update the display
 		window.display();		
