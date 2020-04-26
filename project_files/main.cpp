@@ -74,8 +74,8 @@ class TrafficLight{
 	sf::Texture redTexture;
 	sf::Texture greenTexture;
 	sf::Sprite sprite;
-	TrafficLight *next;
 	public:
+		TrafficLight *next;
 		TrafficLight(float x, float y, float dir, tLightState state);
 		void getPosition(float &x, float&y, float &dir);
 		void draw(sf::RenderWindow& window);
@@ -106,10 +106,13 @@ TrafficLight::TrafficLight(float x, float y, float dir, tLightState state){
 	this->y = y;
 	this->dir = dir;
 	this->state=state;
+	next = NULL;
 }
 
 TrafficLightGroup::TrafficLightGroup(float duration){
 	this->duration = duration;
+	head = NULL;
+	time = 0;
 }
 
 tLightState TrafficLight::getState(){
@@ -181,7 +184,7 @@ void TrafficLight::getPosition(float &x, float&y, float &dir){
 }
 
 void TrafficLight::draw(sf::RenderWindow& window){
-	if(state = Red){
+	if(state == Red){
 		this->sprite.setTexture(redTexture);
 	}else{
 		this->sprite.setTexture(greenTexture);
@@ -191,6 +194,37 @@ void TrafficLight::draw(sf::RenderWindow& window){
 	this->sprite.setRotation(this->dir);
 	//Draw the car sprite to screen
 	window.draw(this->sprite);
+}
+
+void TrafficLightGroup::add(TrafficLight *light){
+	TrafficLight *tmp = head;
+	if(head==NULL){
+		head = light;
+		greenLight = head;
+		greenLight->setState(Green);
+		return;
+	}
+	while(tmp->next!=NULL){
+		tmp = tmp->next;
+	}
+	tmp->next = light; 
+}
+
+void TrafficLightGroup::simulate(float timestep){
+	if(time==duration){
+		if(greenLight->next==NULL){
+			greenLight->setState(Red);
+			greenLight=head;
+			greenLight->setState(Green);
+		}else{
+			greenLight->setState(Red);
+			greenLight = greenLight->next;
+			greenLight->setState(Green);
+		}	
+		time=0;
+	}
+	cout << time << endl;
+	this->time+=timestep;
 }
 
 // The defination of draw function for RoadTile class
@@ -616,11 +650,20 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(1195,1195), "Traffic Simulator"); // The window size-name 
 	Vehicle car(car1, 118, 218, 270); // The car is started from upper-left corner
 	float w_x,w_y;
-	TrafficLight l1(530,647,90,Red);
-	TrafficLight l2(547,532,180,Red);
-	TrafficLight l3(662,552,270,Red);
-	TrafficLight l4(1025,532,180,Red);
-	TrafficLight l5(1125,655,0,Red);
+	TrafficLight* l1 = new TrafficLight(530,647,90,Red);
+	TrafficLight* l2 = new TrafficLight(547,532,180,Red);
+	TrafficLight* l3 = new TrafficLight(662,552,270,Red);
+	TrafficLight* l4 = new TrafficLight(1025,532,180,Red);
+	TrafficLight* l5 = new TrafficLight(1125,655,0,Red);
+	
+	TrafficLightGroup g1(50);
+	TrafficLightGroup g2(50);
+	
+	g1.add(l1);
+	g1.add(l2);
+	g1.add(l3);
+	g2.add(l4);
+	g2.add(l5);
 	
 	while (window.isOpen()) //This is the main loop, the simulation should take place within this loop
 	{
@@ -689,11 +732,11 @@ int main()
 		 r20.draw(window);
 		 r21.draw(window);
 		 
-		 l1.draw(window);
-		 l2.draw(window);
-		 l3.draw(window);
-		 l4.draw(window);
-		 l5.draw(window);
+		 l1->draw(window);
+		 l2->draw(window);
+		 l3->draw(window);
+		 l4->draw(window);
+		 l5->draw(window);
 		
 		//For drawing every waypoint in our road
 		for(int i=0 ; i<48 ; i++)
@@ -731,8 +774,10 @@ int main()
 			}
 		}
 		// Moving the car
+		g1.simulate(1);
+		g2.simulate(1);
 		car.move2(next_x,next_y,next_dir,window,w_x,w_y); 
-		 		 
+	 		 
 		//Update the display
 		window.display();		
 	}
