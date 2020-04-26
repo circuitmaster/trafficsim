@@ -82,6 +82,18 @@ class TrafficLight{
 		void setState(tLightState state);
 };
 
+class TrafficLightGroup{
+	private :
+		TrafficLight *head ;
+		TrafficLight *greenLight;
+		float time;
+		float duration;
+	public :
+		TrafficLightGroup(float duration) ;
+		void add(TrafficLight *light) ;
+		void simulate(float timestep) ;
+};
+
 // The constructor for roadtile
 RoadTile::RoadTile(tRoadTileType t, int row , int col){
 	x = (col-1)*239;
