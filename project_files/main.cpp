@@ -39,33 +39,11 @@ class Vehicle{
 		sf::Sprite sprite;
 	
 	public:
-		Vehicle(tVehicleType t, float x, float y, float angle);
+		int increment;
+		Vehicle(tVehicleType t, float x, float y, float angle, int inc);
 		void move(float &x, float &y, float &angle, sf::RenderWindow& window);
 		void move2(float &x, float &y, float &angle, sf::RenderWindow& window, int w_x, int w_y);
 		void getPosition(float &x, float &y);
-};
-
-// The waypoint class
-class Waypoint{
-	tWayPointdir diir;
-	tRoadTileType type;
-	TrafficLight l;
-	float x; //Global x coordinate of the waypoint
-	float y; //Global y coordinate of the waypoint
-	int dir; //direction of the waypoint (one of the 4 available directions)
-	int idx; 
-	int next1; //Global index of the first alternative next waypoint
-	int next2; //Global index of the second alternative next waypoint
-	int next3; //Global index of the third alternative next waypoint
-	sf::Texture texture; //waypoint texture object
-	sf::Sprite sprite; //waypoint sprite object
-	
-	public:
-		Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int idx, int next1, int next2, int next3,TrafficLight l);
-		int getNext();
-		int getIndex();
-		void getPosition(float &x, float &y, float &dir);
-		void draw(sf::RenderWindow& window);
 };
 
 class TrafficLight{
@@ -83,6 +61,29 @@ class TrafficLight{
 		void draw(sf::RenderWindow& window);
 		tLightState getState();
 		void setState(tLightState state);
+};
+
+// The waypoint class
+class Waypoint{
+	tWayPointdir diir;
+	tRoadTileType type;
+	float x; //Global x coordinate of the waypoint
+	float y; //Global y coordinate of the waypoint
+	int dir; //direction of the waypoint (one of the 4 available directions)
+	int idx; 
+	int next1; //Global index of the first alternative next waypoint
+	int next2; //Global index of the second alternative next waypoint
+	int next3; //Global index of the third alternative next waypoint
+	sf::Texture texture; //waypoint texture object
+	sf::Sprite sprite; //waypoint sprite object
+	
+	public:
+		TrafficLight *l;
+		Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int idx, int next1, int next2, int next3,TrafficLight *l);
+		int getNext();
+		int getIndex();
+		void getPosition(float &x, float &y, float &dir);
+		void draw(sf::RenderWindow& window);
 };
 
 class TrafficLightGroup{
@@ -133,11 +134,12 @@ RoadTile::RoadTile(tRoadTileType t, int row , int col){
 }
 
 //The constructor for vehicle
-Vehicle::Vehicle(tVehicleType t, float x, float y, float angle){
+Vehicle::Vehicle(tVehicleType t, float x, float y, float angle, int inc){
 	this->x = x;
 	this->y = y;
 	this->angle = angle;
 	this->t = t;
+	this->increment = inc;
 	
 //This part is for loading the wanted car type
 	string path = "images/vehicles/";
@@ -286,7 +288,7 @@ void RoadTile::draw(sf::RenderWindow& window){
 }
 
 // The constructor for roadtile
-Waypoint::Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int idx, int next1, int next2, int next3,TrafficLight l=NULL){
+Waypoint::Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int idx, int next1, int next2, int next3,TrafficLight *l=new TrafficLight(0.0,0.0,0.0,Green)){
 	diir = dir;
 	this->type = type;
 	x = (col-1)*239;
@@ -572,7 +574,6 @@ void Vehicle::move(float &x, float &y, float &angle, sf::RenderWindow& window){
 
 // The defination of smooth move of car 
 void Vehicle::move2(float &x, float &y, float &angle, sf::RenderWindow& window,int w_x, int w_y){
-	int increment=1;
 	
 	switch(int(this->angle)%360){
 		case 0:
@@ -651,7 +652,7 @@ int main()
 {
 	srand(time(NULL)); //For real randomization 
 	sf::RenderWindow window(sf::VideoMode(1195,1195), "Traffic Simulator"); // The window size-name 
-	Vehicle car(car1, 118, 218, 270); // The car is started from upper-left corner
+	Vehicle car(car1, 118, 218, 270, 1); // The car is started from upper-left corner
 	float w_x,w_y;
 	TrafficLight* l1 = new TrafficLight(530,647,90,Red);
 	TrafficLight* l2 = new TrafficLight(547,532,180,Red);
@@ -659,8 +660,8 @@ int main()
 	TrafficLight* l4 = new TrafficLight(1025,532,180,Red);
 	TrafficLight* l5 = new TrafficLight(1125,655,0,Red);
 	
-	TrafficLightGroup g1(50);
-	TrafficLightGroup g2(50);
+	TrafficLightGroup g1(10);
+	TrafficLightGroup g2(10);
 	
 	g1.add(l1);
 	g1.add(l2);
@@ -682,7 +683,7 @@ int main()
 		 window.clear(sf::Color::White); 
 		
 		//Below is the array of every 48 waypoints
-		Waypoint arr[48] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,-1,-1,-1), Waypoint(Right,SH,1,2,0,1,-1,-1), Waypoint(Right,SH,1,2,1,-1,-1,-1),Waypoint(Right,TT,1,3,0,1,2,-1),Waypoint(Down,TT,1,3,1,-1,-1,-1),Waypoint(Right,TT,1,3,2,-1,-1,-1),Waypoint(Right,SH,1,4,0,1,-1,-1), Waypoint(Right,SH,1,4,1,4,-1,-1),Waypoint(Right,CTR,1,5,0,1,-1,-1), Waypoint(Down,CTR,1,5,1,-1,-1,-1),Waypoint(Up,SV,2,1,0,1,-1,-1), Waypoint(Up,SV,2,1,1,-1,-1,-1),Waypoint(Down,SV,2,3,0,1,-1,-1), Waypoint(Down,SV,2,3,1,-1,-1,-1),Waypoint(Down,SV,2,5,0,1,-1,-1), Waypoint(Down,SV,2,5,1,-1,-1,-1),Waypoint(Up,TL,3,1,0,-1,-1,-1),Waypoint(Right,TL,3,1,1,-1,-1,-1),Waypoint(Up,TL,3,1,2,0,1,-1), Waypoint(Right,SH,3,2,0,1,-1,-1), Waypoint(Right,SH,3,2,1,4,-1,-1),Waypoint(Right,C,3,3,0,3,-1,-1), Waypoint(Down,C,3,3,1,3,-1,-1),Waypoint(Left,C,3,3,2,3,-1,-1), Waypoint(Down,C,3,3,3,-1,-1,-1), Waypoint(Left,SH,3,4,0,1,-1,-1), Waypoint(Left,SH,3,4,1,4,-1,-1),Waypoint(Down,TR,3,5,0,1,-1,-1),Waypoint(Left,TR,3,5,1,-1,-1,-1),Waypoint(Up,TR,3,5,2,1,-1,-1),Waypoint(Up,SV,4,1,0,1,-1,-1), Waypoint(Up,SV,4,1,1,-1,-1,-1),Waypoint(Down,SV,4,3,0,1,-1,-1), Waypoint(Down,SV,4,3,1,-1,-1,-1),Waypoint(Up,SV,4,5,0,1,-1,-1), Waypoint(Up,SV,4,5,1,-1,-1,-1),Waypoint(Up,CBL,5,1,0,-1,-1,-1), Waypoint(Left,CBL,5,1,1,0,-1,-1), Waypoint(Left,SH,5,2,0,1,-1,-1), Waypoint(Left,SH,5,2,1,4,-1,-1),Waypoint(Left,TB,5,3,0,-1,-1,-1),Waypoint(Down,TB,5,3,1,0,2,-1),Waypoint(Right,TB,5,3,2,-1,-1,-1), Waypoint(Right,SH,5,4,0,1,-1,-1), Waypoint(Right,SH,5,4,1,4,-1,-1),Waypoint(Right,CBR,5,5,0,1,-1,-1), Waypoint(Up,CBR,5,5,1,-1,-1,-1)};
+		Waypoint arr[48] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,-1,-1,-1), Waypoint(Right,SH,1,2,0,1,-1,-1), Waypoint(Right,SH,1,2,1,-1,-1,-1),Waypoint(Right,TT,1,3,0,1,2,-1),Waypoint(Down,TT,1,3,1,-1,-1,-1),Waypoint(Right,TT,1,3,2,-1,-1,-1),Waypoint(Right,SH,1,4,0,1,-1,-1), Waypoint(Right,SH,1,4,1,4,-1,-1),Waypoint(Right,CTR,1,5,0,1,-1,-1), Waypoint(Down,CTR,1,5,1,-1,-1,-1),Waypoint(Up,SV,2,1,0,1,-1,-1), Waypoint(Up,SV,2,1,1,-1,-1,-1),Waypoint(Down,SV,2,3,0,1,-1,-1), Waypoint(Down,SV,2,3,1,-1,-1,-1,l2),Waypoint(Down,SV,2,5,0,1,-1,-1), Waypoint(Down,SV,2,5,1,-1,-1,-1),Waypoint(Up,TL,3,1,0,-1,-1,-1),Waypoint(Right,TL,3,1,1,-1,-1,-1),Waypoint(Up,TL,3,1,2,0,1,-1), Waypoint(Right,SH,3,2,0,1,-1,-1), Waypoint(Right,SH,3,2,1,4,-1,-1),Waypoint(Right,C,3,3,0,3,-1,-1), Waypoint(Down,C,3,3,1,3,-1,-1),Waypoint(Left,C,3,3,2,3,-1,-1), Waypoint(Down,C,3,3,3,-1,-1,-1), Waypoint(Left,SH,3,4,0,1,-1,-1), Waypoint(Left,SH,3,4,1,4,-1,-1),Waypoint(Down,TR,3,5,0,1,-1,-1),Waypoint(Left,TR,3,5,1,-1,-1,-1),Waypoint(Up,TR,3,5,2,1,-1,-1),Waypoint(Up,SV,4,1,0,1,-1,-1), Waypoint(Up,SV,4,1,1,-1,-1,-1),Waypoint(Down,SV,4,3,0,1,-1,-1), Waypoint(Down,SV,4,3,1,-1,-1,-1),Waypoint(Up,SV,4,5,0,1,-1,-1), Waypoint(Up,SV,4,5,1,-1,-1,-1),Waypoint(Up,CBL,5,1,0,-1,-1,-1), Waypoint(Left,CBL,5,1,1,0,-1,-1), Waypoint(Left,SH,5,2,0,1,-1,-1), Waypoint(Left,SH,5,2,1,4,-1,-1),Waypoint(Left,TB,5,3,0,-1,-1,-1),Waypoint(Down,TB,5,3,1,0,2,-1),Waypoint(Right,TB,5,3,2,-1,-1,-1), Waypoint(Right,SH,5,4,0,1,-1,-1), Waypoint(Right,SH,5,4,1,4,-1,-1),Waypoint(Right,CBR,5,5,0,1,-1,-1), Waypoint(Up,CBR,5,5,1,-1,-1,-1)};
 		
 		//Some variables for further usage
 		float x,y,x2,y2,dir,next_x,next_y,next_dir;
@@ -746,11 +747,17 @@ int main()
 		{
 			arr[i].draw(window);
 		}
-		
+		//l2->setState(Red);
 		//This part finds which waypoint the car stands now for determining local waypoint and use that waypoints functions. 
 		for(int j=0; j<48; j++){
 			arr[j].getPosition(x2,y2,dir);
 			if(x==x2 && y==y2){
+				if(arr[j].l->getState()==Red){
+					car.increment=0; 
+					break;
+				}else{
+					car.increment=1;
+				}
 				col = (int)(x2/239) + 1; 
 				row = (int)(y2/239) + 1;
 				idx = arr[j].getNext();
