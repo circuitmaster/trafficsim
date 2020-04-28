@@ -660,8 +660,8 @@ int main()
 	TrafficLight* l4 = new TrafficLight(1025,532,180,Red); //right top 
 	TrafficLight* l5 = new TrafficLight(1125,655,0,Red); //right down
 	
-	TrafficLightGroup g1(100);
-	TrafficLightGroup g2(100);
+	TrafficLightGroup g1(200);
+	TrafficLightGroup g2(200);
 	
 	g1.add(l1);
 	g1.add(l2);
@@ -690,6 +690,7 @@ int main()
 		int col,row,idx;
 		for(int i=0;i<6;i++){
 			car[i].getPosition(x[i],y[i]);
+			car[i].increment=1;
 		}
 		
 		// Every roadtile in our road
@@ -784,6 +785,42 @@ int main()
 						}
 					}
 					//break;
+				}
+			}
+		}
+		
+		for(int i=0;i<6;i++){
+			for(int j=i+1;j<6;j++){
+				if(x[i]==x[j] && abs(y[i]-y[j])<80){
+					int k = (y[i]-y[j])/abs(y[i]-y[j]);
+					switch((int)next_dir[j]){
+						case Up:
+							if(k==-1)k=j;
+							else k=i;
+							break;
+						case Down:
+							if(k==-1)k=i;
+							else k=j;
+							break;
+						default:
+							break;
+					}
+					car[k].increment = 0;	
+				}else if(y[i]==y[j] && abs(x[i]-x[j])<80){
+					int k = (x[i]-x[j])/abs(x[i]-x[j]);
+					switch((int)next_dir[j]){
+						case Left:
+							if(k==-1)k=j;
+							else k=i;
+							break;
+						case Right:
+							if(k==-1)k=i;
+							else k=j;
+							break;
+						default:
+							break;
+					}
+					car[k].increment = 0;	
 				}
 			}
 		}
