@@ -660,8 +660,13 @@ int main()
 	TrafficLight* l4 = new TrafficLight(1025,532,180,Red); //right top 
 	TrafficLight* l5 = new TrafficLight(1125,655,0,Red); //right down
 	
+<<<<<<< HEAD
 	TrafficLightGroup g1(100);
 	TrafficLightGroup g2(100);
+=======
+	TrafficLightGroup g1(50);
+	TrafficLightGroup g2(50);
+>>>>>>> 5959440547bf6e93ea3963aa4ea2f36ad410861c
 	
 	g1.add(l1);
 	g1.add(l2);
