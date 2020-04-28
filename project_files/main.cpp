@@ -652,8 +652,8 @@ int main()
 {
 	srand(time(NULL)); //For real randomization 
 	sf::RenderWindow window(sf::VideoMode(1195,1195), "Traffic Simulator"); // The window size-name 
-	Vehicle car(car1, 118, 218, 270, 1); // The car is started from upper-left corner
-	float w_x,w_y;
+	Vehicle car[6] = {Vehicle(car1, 118, 218, 270, 1), Vehicle(car2, 4*239+20, 121, 0, 1), Vehicle(car3, 118, 4*239+20, 270, 1), Vehicle(car4, 4*239+118, 4*239+20, 270, 1), Vehicle(car5, 218, 2*239+121, 0, 1), Vehicle(car6, 4*239+20, 2*239+121, 180, 1)};
+	float w_x[6],w_y[6];
 	TrafficLight* l1 = new TrafficLight(530,647,90,Red); //middle left
 	TrafficLight* l2 = new TrafficLight(547,532,180,Red); //middle top
 	TrafficLight* l3 = new TrafficLight(662,552,270,Red); //middle right
@@ -686,9 +686,11 @@ int main()
 		Waypoint arr[48] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,-1,-1,-1), Waypoint(Right,SH,1,2,0,1,-1,-1), Waypoint(Right,SH,1,2,1,-1,-1,-1),Waypoint(Right,TT,1,3,0,1,2,-1),Waypoint(Down,TT,1,3,1,-1,-1,-1),Waypoint(Right,TT,1,3,2,-1,-1,-1),Waypoint(Right,SH,1,4,0,1,-1,-1), Waypoint(Right,SH,1,4,1,4,-1,-1),Waypoint(Right,CTR,1,5,0,1,-1,-1), Waypoint(Down,CTR,1,5,1,-1,-1,-1),Waypoint(Up,SV,2,1,0,1,-1,-1), Waypoint(Up,SV,2,1,1,-1,-1,-1),Waypoint(Down,SV,2,3,0,1,-1,-1), Waypoint(Down,SV,2,3,1,-1,-1,-1),Waypoint(Down,SV,2,5,0,1,-1,-1), Waypoint(Down,SV,2,5,1,-1,-1,-1),Waypoint(Up,TL,3,1,0,-1,-1,-1),Waypoint(Right,TL,3,1,1,-1,-1,-1),Waypoint(Up,TL,3,1,2,0,1,-1), Waypoint(Right,SH,3,2,0,1,-1,-1), Waypoint(Right,SH,3,2,1,4,-1,-1),Waypoint(Right,C,3,3,0,3,-1,-1,l1), Waypoint(Down,C,3,3,1,3,-1,-1,l2),Waypoint(Left,C,3,3,2,3,-1,-1,l3), Waypoint(Down,C,3,3,3,-1,-1,-1), Waypoint(Left,SH,3,4,0,1,-1,-1), Waypoint(Left,SH,3,4,1,4,-1,-1),Waypoint(Down,TR,3,5,0,1,-1,-1,l4),Waypoint(Left,TR,3,5,1,-1,-1,-1),Waypoint(Up,TR,3,5,2,1,-1,-1,l5),Waypoint(Up,SV,4,1,0,1,-1,-1), Waypoint(Up,SV,4,1,1,-1,-1,-1),Waypoint(Down,SV,4,3,0,1,-1,-1), Waypoint(Down,SV,4,3,1,-1,-1,-1),Waypoint(Up,SV,4,5,0,1,-1,-1), Waypoint(Up,SV,4,5,1,-1,-1,-1),Waypoint(Up,CBL,5,1,0,-1,-1,-1), Waypoint(Left,CBL,5,1,1,0,-1,-1), Waypoint(Left,SH,5,2,0,1,-1,-1), Waypoint(Left,SH,5,2,1,4,-1,-1),Waypoint(Left,TB,5,3,0,-1,-1,-1),Waypoint(Down,TB,5,3,1,0,2,-1),Waypoint(Right,TB,5,3,2,-1,-1,-1), Waypoint(Right,SH,5,4,0,1,-1,-1), Waypoint(Right,SH,5,4,1,4,-1,-1),Waypoint(Right,CBR,5,5,0,1,-1,-1), Waypoint(Up,CBR,5,5,1,-1,-1,-1)};
 		
 		//Some variables for further usage
-		float x,y,x2,y2,dir,next_x,next_y,next_dir;
+		float x[6],y[6],x2,y2,dir,next_x[6],next_y[6],next_dir[6];
 		int col,row,idx;
-		car.getPosition(x,y);
+		for(int i=0;i<6;i++){
+			car[i].getPosition(x[i],y[i]);
+		}
 		
 		// Every roadtile in our road
 		 RoadTile r1(CTL,1,1);
@@ -751,43 +753,47 @@ int main()
 		//This part finds which waypoint the car stands now for determining local waypoint and use that waypoints functions. 
 		for(int j=0; j<48; j++){
 			arr[j].getPosition(x2,y2,dir);
-			if(x==x2 && y==y2){
-				if(arr[j].l->getState()==Red){
-					car.increment=0; 
-					break;
-				}else{
-					car.increment=1;
-				}
-				col = (int)(x2/239) + 1; 
-				row = (int)(y2/239) + 1;
-				idx = arr[j].getNext();
-				if(idx<0){
-					next_dir = dir;
-					break;
-				}
-				w_x=x2; 
-				w_y=y2;
-				for(int k=0; k<48; k++){
-					int cl,rw;
-					float x_,y_,dir_;
-					arr[k].getPosition(x_,y_,dir_);
-					cl = (int)(x_/239) + 1; 
-					rw = (int)(y_/239) + 1;
-					if(arr[k].getIndex()==idx && cl==col && rw==row){
-						next_x = x_; 
-						next_y = y_;
-						next_dir = dir_;
+			for(int i=0; i<6; i++){
+				if(x[i]==x2 && y[i]==y2){
+					if(arr[j].l->getState()==Red){
+						car[i].increment=0; 
+						break;
+					}else{
+						car[i].increment=1;
+					}
+					col = (int)(x2/239) + 1; 
+					row = (int)(y2/239) + 1;
+					idx = arr[j].getNext();
+					if(idx<0){
+						next_dir[i] = dir;
 						break;
 					}
+					w_x[i]=x2; 
+					w_y[i]=y2;
+					for(int k=0; k<48; k++){
+						int cl,rw;
+						float x_,y_,dir_;
+						arr[k].getPosition(x_,y_,dir_);
+						cl = (int)(x_/239) + 1; 
+						rw = (int)(y_/239) + 1;
+						if(arr[k].getIndex()==idx && cl==col && rw==row){
+							next_x[i] = x_; 
+							next_y[i] = y_;
+							next_dir[i] = dir_;
+							break;
+						}
+					}
+					//break;
 				}
-				break;
 			}
 		}
 		// Moving the car
 		g1.simulate(1);
 		g2.simulate(1);
-		car.move2(next_x,next_y,next_dir,window,w_x,w_y); 
-	 		 
+		for(int i=0;i<6;i++){
+			car[i].move2(next_x[i],next_y[i],next_dir[i],window,w_x[i],w_y[i]);
+		}
+			 
 		//Update the display
 		window.display();		
 	}
