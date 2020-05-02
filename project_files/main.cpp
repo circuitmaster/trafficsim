@@ -237,7 +237,6 @@ void TrafficLightGroup::simulate(float timestep){
 		}	
 		time=0;
 	}
-	//cout << time << endl;
 	this->time+=timestep;
 }
 
