@@ -237,7 +237,6 @@ void TrafficLightGroup::simulate(float timestep){
 		}	
 		time=0;
 	}
-	//cout << time << endl;
 	this->time+=timestep;
 }
 
@@ -297,7 +296,7 @@ void RoadTile::draw(sf::RenderWindow& window){
 	window.draw(this->sprite);
 }
 
-// The constructor for roadtile
+// The constructor for waypoint
 Waypoint::Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int idx, int next1, int next2, int next3,TrafficLight *l=new TrafficLight(0.0,0.0,0.0,Green)){
 	diir = dir;
 	this->type = type;
