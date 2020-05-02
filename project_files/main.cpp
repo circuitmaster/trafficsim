@@ -46,6 +46,7 @@ class Vehicle{
 		void getPosition(float &x, float &y);
 };
 
+//Defination of traffic light class
 class TrafficLight{
 	float x;
 	float y;
@@ -86,6 +87,7 @@ class Waypoint{
 		void draw(sf::RenderWindow& window);
 };
 
+//Defination of traffic light Linked-List class
 class TrafficLightGroup{
 	private :
 		TrafficLight *head ;
@@ -98,6 +100,7 @@ class TrafficLightGroup{
 		void simulate(float timestep) ;
 };
 
+//Constructor of traffic light class
 TrafficLight::TrafficLight(float x, float y, float dir, tLightState state){
 	string path = "images/trafficlights/red.png";
 	string path2 = "images/trafficlights/green.png";
@@ -112,16 +115,19 @@ TrafficLight::TrafficLight(float x, float y, float dir, tLightState state){
 	next = NULL;
 }
 
+//Constructor of traffic light group class
 TrafficLightGroup::TrafficLightGroup(float duration){
 	this->duration = duration;
 	head = NULL;
 	time = 0;
 }
 
+//Traffic light getState function defination
 tLightState TrafficLight::getState(){
 	return this->state;
 }
 
+//Traffic light setState function defination
 void TrafficLight::setState(tLightState state){
 	this->state = state;
 }
@@ -181,12 +187,14 @@ Vehicle::Vehicle(tVehicleType t, float x, float y, float angle, int inc){
 		
 }
 
+//Traffic light getPosition function defination
 void TrafficLight::getPosition(float &x, float&y, float &dir){
 	x = this->x;
 	y = this->y;
 	dir = this->dir;
 }
 
+//Traffic light draw function defination
 void TrafficLight::draw(sf::RenderWindow& window){
 	if(state == Red){
 		this->sprite.setTexture(redTexture);
@@ -200,6 +208,7 @@ void TrafficLight::draw(sf::RenderWindow& window){
 	window.draw(this->sprite);
 }
 
+//Traffic light Linked-List add function  
 void TrafficLightGroup::add(TrafficLight *light){
 	TrafficLight *tmp = head;
 	if(head==NULL){
@@ -214,6 +223,7 @@ void TrafficLightGroup::add(TrafficLight *light){
 	tmp->next = light; 
 }
 
+//Simulation function for a one group of traffic lights 
 void TrafficLightGroup::simulate(float timestep){
 	if(time==duration){
 		if(greenLight->next==NULL){
@@ -313,7 +323,7 @@ void Vehicle::getPosition(float &x, float &y){
 	y = this->y;
 }
 
-//// Defination of draw function for waypoint class
+// Defination of draw function for waypoint class
 void Waypoint::draw(sf::RenderWindow& window){
  	string path = "images/waypoints/";
  	switch(diir){
@@ -738,6 +748,7 @@ int main()
 		 r19.draw(window);
 		 r20.draw(window);
 		 r21.draw(window);
+		 // For drawing every traffic light in our road
 		 
 		 l1->draw(window);
 		 l2->draw(window);
@@ -750,13 +761,14 @@ int main()
 		{
 			arr[i].draw(window);
 		}
-		//l2->setState(Red);
-		//This part finds which waypoint the car stands now for determining local waypoint and use that waypoints functions. 
+		
+		//This part finds which waypoint the car stands now for determining local waypoint and use that waypoints functions.(For first part)
+		//The speed reduction part is also added for the state of the traffic light in second part
 		for(int j=0; j<48; j++){
 			arr[j].getPosition(x2,y2,dir);
 			for(int i=0; i<6; i++){
 				if(x[i]==x2 && y[i]==y2){
-					if(arr[j].l->getState()==Red){
+					if(arr[j].l->getState()==Red){   //Here it checks the traffic lights state
 						car[i].increment=0; 
 						break;
 					}else{
@@ -784,11 +796,11 @@ int main()
 							break;
 						}
 					}
-					//break;
 				}
 			}
 		}
 		
+		//This part is checking if there are any collision between the cars , and if any , reduces the speed of the behind to zero
 		for(int i=0;i<6;i++){
 			for(int j=i+1;j<6;j++){
 				if(x[i]==x[j] && abs(y[i]-y[j])<80){
@@ -824,7 +836,8 @@ int main()
 				}
 			}
 		}
-		// Moving the car
+		// Moving the cars
+		//Simulating the traffic lights 
 		g1.simulate(1);
 		g2.simulate(1);
 		for(int i=0;i<6;i++){
