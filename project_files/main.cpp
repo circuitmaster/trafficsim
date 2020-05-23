@@ -727,36 +727,36 @@ void Car::move2(sf::RenderWindow& window, Waypoint arr[48]){
 	
 	if((int)this->angle>=270 && (int)this->angle<=360 && angle==0 && (this->y>y) && this->angle!=angle){
 		this->angle += increment;
-		this->x = x+(sin(this->angle*3.141592653589793238463/180)) * 100;
+		this->x = next_x+(sin(this->angle*3.141592653589793238463/180)) * 100;
 		this->y = w_y-(cos(this->angle*3.141592653589793238463/180)) * 97;
 	}else if((int)this->angle<=270 && (int)this->angle>=180 && angle == 180 && this->y>y && this->angle!=angle){
 		this->angle -= increment;
-		this->x = x-(sin(this->angle*3.141592653589793238463/180)) * 100;
+		this->x = next_x-(sin(this->angle*3.141592653589793238463/180)) * 100;
 		this->y = w_y+(cos(this->angle*3.141592653589793238463/180)) * 97;
 	}else if((int)this->angle<=90 && (int)this->angle>=0 && angle == 0 && this->y<y && this->angle!=angle){
 		this->angle -= increment;
-		this->x = x-(sin(this->angle*3.141592653589793238463/180)) * 100;
+		this->x = next_x-(sin(this->angle*3.141592653589793238463/180)) * 100;
 		this->y = w_y+(cos(this->angle*3.141592653589793238463/180)) * 101;
 	}else if((int)this->angle>=90 && (int)this->angle<=180 && angle == 180 && this->y<y && (int)this->angle!=angle){
 		this->angle += increment;
-		this->x = x+(sin(this->angle*3.141592653589793238463/180)) * 98;
+		this->x = next_x+(sin(this->angle*3.141592653589793238463/180)) * 98;
 		this->y = w_y-(cos(this->angle*3.141592653589793238463/180)) * 101;
 	}else if((int)this->angle>=0 && (int)this->angle<=90 && angle==90 && (this->x<x) && this->angle!=angle){
 		this->angle += increment;
 		this->x = w_x+(sin(this->angle*3.141592653589793238463/180)) * 98;
-		this->y = y-(cos(this->angle*3.141592653589793238463/180)) * 97;
+		this->y = next_y-(cos(this->angle*3.141592653589793238463/180)) * 97;
 	}else if((int)this->angle<=0 && (int)this->angle>=-90 && angle == 270 && (this->x<x) && this->angle!=angle){
 		this->angle -= increment;
 		this->x = w_x-(sin(this->angle*3.141592653589793238463/180)) * 98;
-		this->y = y+(cos(this->angle*3.141592653589793238463/180)) * 97;
+		this->y = next_y+(cos(this->angle*3.141592653589793238463/180)) * 97;
 	}else if((int)this->angle<=180 && (int)this->angle>=90 && angle == 90 && this->x>x && this->angle!=angle){
 		this->angle -= increment;
 		this->x = w_x-(sin(this->angle*3.141592653589793238463/180)) * 100;
-		this->y = y+(cos(this->angle*3.141592653589793238463/180)) * 97;
+		this->y = next_y+(cos(this->angle*3.141592653589793238463/180)) * 97;
 	}else if((int)this->angle>=180 && (int)this->angle<=270 && angle == 270 && this->x>x && this->angle!=angle){
 		this->angle += increment;
 		this->x = w_x+(sin(this->angle*3.141592653589793238463/180)) * 100;
-		this->y = y-(cos(this->angle*3.141592653589793238463/180)) * 97;
+		this->y = next_y-(cos(this->angle*3.141592653589793238463/180)) * 97;
 	}else if((int)this->angle%360==angle){
 		if((int)angle%360==0)
 			this->x+=increment;
