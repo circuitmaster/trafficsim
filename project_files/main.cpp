@@ -4,6 +4,8 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+
+#define PI 3.141592653589793238463
 //This part is enumerators for images given
 using namespace std;
 
@@ -72,7 +74,6 @@ class Waypoint{
 
 class Vehicle{
 	public:
-		virtual void move(float &x, float &y, float &angle, sf::RenderWindow& window) = 0;
 		virtual void move2(sf::RenderWindow& window, Waypoint arr[48]) = 0;
 };
 
@@ -98,17 +99,18 @@ class Car : public Vehicle{
 //The Bus class
 class Bus : public Vehicle{
 	private:
+		float next_x, next_y, w_x, w_y; 
 		vector<int> stops;
 		int currentStop;
-		tVehicleType t;
 		float x, y, angle;
 		bool origin_set;
 		sf::Texture texture; 
 		sf::Sprite sprite;
 	
 	public:
+		float next_dir;
 		int increment;
-		Bus(tVehicleType t, float x, float y, float angle, int inc);
+		Bus(float x, float y, float angle, int inc);
 		void move2(sf::RenderWindow& window, Waypoint arr[48]);
 		void getPosition(float &x, float &y);
 		void addStop(int index);
@@ -123,7 +125,7 @@ class BusStop{
     public:
     	BusStop(float x, float y, float dir);
     	void getPosition(float &x, float &y, float &dir);
-    	void draw();
+    	void draw(sf::RenderWindow& window);
 };
 
 
@@ -141,51 +143,42 @@ class TrafficLightGroup{
 		void simulate(float timestep) ;
 };
 
-Bus::Bus(tVehicleType t, float x, float y, float angle, int inc){
+Bus::Bus(float x, float y, float angle, int inc){
 	this->x = x;
 	this->y = y;
 	this->angle = angle;
-	this->t = t;
 	this->increment = inc;
 	
-//This part is for loading the wanted car type
-	string path = "images/vehicles/";
- 	switch(t){
- 		case CBL:
- 			path+="car1.png";
- 			break;
- 		case CBR:
- 			path+="car2.png";
- 			break;
-		case CTL:
-			path+="car3.png";
-			break;
-		case CTR:
-			path+="car4.png";
-			break;
-		case C:
-			path+="car5.png";
-			break;
-		case SH:
-			path+="car6.png";
-			break;
-		default:
-			break;
-		}
-		
-		if (!this->texture.loadFromFile(path))
-		{
-			cout << "Could not find the image file" << endl;
-		}	
- 	
-	 
-		this->sprite.setTexture(texture);
+	//This part is for loading the wanted car type
+	string path = "images/vehicles/bus.png";
 	
-		sf::FloatRect boundingBox = sprite.getGlobalBounds();
-	 	//Set the sprite rotation origin to the center of the bounding box
-	 	sprite.setOrigin(sf::Vector2f(boundingBox.width / 2, boundingBox.height / 2)); 
-	 	sprite.setRotation(angle);
+	if (!this->texture.loadFromFile(path))
+	{
+		cout << "Could not find the image file" << endl;
+	}	
+ 	
+	this->sprite.setTexture(texture);
+	sf::FloatRect boundingBox = sprite.getGlobalBounds();
+	//Set the sprite rotation origin to the center of the bounding box
+	sprite.setOrigin(sf::Vector2f(boundingBox.width / 2, boundingBox.height / 2)); 
+	sprite.setRotation(angle);
 }
+
+BusStop::BusStop(float x, float y, float dir){
+	this->x = x;
+	this->y = y;
+	this->dir = dir;
+	string path = "images/busstop/busstop.png";
+	if (!this->texture.loadFromFile(path))
+	{
+		cout << "Could not find the image file" << endl;
+	}	
+	this->sprite.setTexture(texture);
+	sf::FloatRect boundingBox = sprite.getGlobalBounds();
+	sprite.setOrigin(sf::Vector2f(boundingBox.width / 2, boundingBox.height / 2)); 
+	sprite.setRotation(dir+90);
+}
+
 
 //Constructor of traffic light class
 TrafficLight::TrafficLight(float x, float y, float dir, tLightState state){
@@ -407,6 +400,11 @@ void Waypoint::getPosition(float &x, float &y, float &dir){
 void Car::getPosition(float &x, float &y){
 	x = this->x;
 	y = this->y;
+}
+
+void BusStop::draw(sf::RenderWindow& window){
+	this->sprite.setPosition(x, y);
+	window.draw(this->sprite);
 }
 
 // Defination of draw function for waypoint class
@@ -709,8 +707,6 @@ void Car::move2(sf::RenderWindow& window, Waypoint arr[48]){
 			
 	}
 	
-	//cout << next_dir << endl;
-	//cout << next_x << " " << next_y << endl;
 	
 	switch(int(this->angle)%360){
 		case 0:
@@ -732,36 +728,36 @@ void Car::move2(sf::RenderWindow& window, Waypoint arr[48]){
 	
 	if((int)this->angle>=270 && (int)this->angle<=360 && next_dir==0 && (this->y>next_y) && this->angle!=next_dir){
 		this->angle += increment;
-		this->x = next_x+(sin(this->angle*3.141592653589793238463/180)) * 100;
-		this->y = this->w_y-(cos(this->angle*3.141592653589793238463/180)) * 97;
+		this->x = next_x+(sin(this->angle*PI/180)) * 100;
+		this->y = this->w_y-(cos(this->angle*PI/180)) * 97;
 	}else if((int)this->angle<=270 && (int)this->angle>=180 && next_dir == 180 && this->y>next_y && this->angle!=next_dir){
 		this->angle -= increment;
-		this->x = next_x-(sin(this->angle*3.141592653589793238463/180)) * 100;
-		this->y = this->w_y+(cos(this->angle*3.141592653589793238463/180)) * 97;
+		this->x = next_x-(sin(this->angle*PI/180)) * 100;
+		this->y = this->w_y+(cos(this->angle*PI/180)) * 97;
 	}else if((int)this->angle<=90 && (int)this->angle>=0 && next_dir == 0 && this->y<next_y && this->angle!=next_dir){
 		this->angle -= increment;
-		this->x = next_x-(sin(this->angle*3.141592653589793238463/180)) * 100;
-		this->y = this->w_y+(cos(this->angle*3.141592653589793238463/180)) * 101;
+		this->x = next_x-(sin(this->angle*PI/180)) * 100;
+		this->y = this->w_y+(cos(this->angle*PI/180)) * 101;
 	}else if((int)this->angle>=90 && (int)this->angle<=180 && next_dir == 180 && this->y<next_y && (int)this->angle!=next_dir){
 		this->angle += increment;
-		this->x = next_x+(sin(this->angle*3.141592653589793238463/180)) * 98;
-		this->y = this->w_y-(cos(this->angle*3.141592653589793238463/180)) * 101;
+		this->x = next_x+(sin(this->angle*PI/180)) * 98;
+		this->y = this->w_y-(cos(this->angle*PI/180)) * 101;
 	}else if((int)this->angle>=0 && (int)this->angle<=90 && next_dir==90 && (this->x<next_x) && this->angle!=next_dir){
 		this->angle += increment;
-		this->x = this->w_x+(sin(this->angle*3.141592653589793238463/180)) * 98;
-		this->y = next_y-(cos(this->angle*3.141592653589793238463/180)) * 97;
+		this->x = this->w_x+(sin(this->angle*PI/180)) * 98;
+		this->y = next_y-(cos(this->angle*PI/180)) * 97;
 	}else if((int)this->angle<=0 && (int)this->angle>=-90 && next_dir == 270 && (this->x<next_x) && this->angle!=next_dir){
 		this->angle -= increment;
-		this->x = this->w_x-(sin(this->angle*3.141592653589793238463/180)) * 98;
-		this->y = next_y+(cos(this->angle*3.141592653589793238463/180)) * 97;
+		this->x = this->w_x-(sin(this->angle*PI/180)) * 98;
+		this->y = next_y+(cos(this->angle*PI/180)) * 97;
 	}else if((int)this->angle<=180 && (int)this->angle>=90 && next_dir == 90 && this->x>next_x && this->angle!=next_dir){
 		this->angle -= increment;
-		this->x = this->w_x-(sin(this->angle*3.141592653589793238463/180)) * 100;
-		this->y = next_y+(cos(this->angle*3.141592653589793238463/180)) * 97;
+		this->x = this->w_x-(sin(this->angle*PI/180)) * 100;
+		this->y = next_y+(cos(this->angle*PI/180)) * 97;
 	}else if((int)this->angle>=180 && (int)this->angle<=270 && next_dir == 270 && this->x>next_x && this->angle!=next_dir){
 		this->angle += increment;
-		this->x = this->w_x+(sin(this->angle*3.141592653589793238463/180)) * 100;
-		this->y = next_y-(cos(this->angle*3.141592653589793238463/180)) * 97;
+		this->x = this->w_x+(sin(this->angle*PI/180)) * 100;
+		this->y = next_y-(cos(this->angle*PI/180)) * 97;
 	}else if((int)this->angle%360==next_dir){
 		if((int)next_dir%360==0)
 			this->x+=increment;
@@ -781,7 +777,45 @@ void Car::move2(sf::RenderWindow& window, Waypoint arr[48]){
 }
 
 void Bus::move2(sf::RenderWindow& window, Waypoint arr[48]){
-	/*switch(int(this->angle)%360){
+	float waypoint_x, waypoint_y, waypoint_dir;
+	int col, row, idx;
+	
+	for(int j=0; j<48; j++){
+		arr[j].getPosition(waypoint_x, waypoint_y, waypoint_dir);
+			if(this->x == waypoint_x && this->y == waypoint_y){
+				if(arr[j].l->getState()==Red){   //Here it checks the traffic lights state
+					this->increment=0; 
+					break;
+				}else{
+					this->increment=1;
+				}
+				col = (int)(waypoint_x/239) + 1; 
+				row = (int)(waypoint_y/239) + 1;
+				idx = arr[j].getNext();
+				if(idx<0){
+					this->next_dir = waypoint_dir;
+					break;
+				}
+				this->w_x = waypoint_x; 
+				this->w_y = waypoint_y;
+				for(int k=0; k<48; k++){
+					int cl,rw;
+					float x_,y_,dir_;
+					arr[k].getPosition(x_,y_,dir_);
+					cl = (int)(x_/239) + 1; 
+					rw = (int)(y_/239) + 1;
+					if(arr[k].getIndex()==idx && cl==col && rw==row){
+						this->next_x = x_; 
+						this->next_y = y_;
+						this->next_dir = dir_;
+						break;
+					}
+				}
+			}
+			
+	}
+	
+	switch(int(this->angle)%360){
 		case 0:
 			this->angle = 0;
 			break;
@@ -799,53 +833,53 @@ void Bus::move2(sf::RenderWindow& window, Waypoint arr[48]){
 			break;
 	}
 	
-	if((int)this->angle>=270 && (int)this->angle<=360 && angle==0 && (this->y>y) && this->angle!=angle){
+	if((int)this->angle>=270 && (int)this->angle<=360 && next_dir==0 && (this->y>next_y) && this->angle!=next_dir){
 		this->angle += increment;
-		this->x = x+(sin(this->angle*3.141592653589793238463/180)) * 100;
-		this->y = w_y-(cos(this->angle*3.141592653589793238463/180)) * 97;
-	}else if((int)this->angle<=270 && (int)this->angle>=180 && angle == 180 && this->y>y && this->angle!=angle){
+		this->x = next_x+(sin(this->angle*PI/180)) * 100;
+		this->y = this->w_y-(cos(this->angle*PI/180)) * 97;
+	}else if((int)this->angle<=270 && (int)this->angle>=180 && next_dir == 180 && this->y>next_y && this->angle!=next_dir){
 		this->angle -= increment;
-		this->x = x-(sin(this->angle*3.141592653589793238463/180)) * 100;
-		this->y = w_y+(cos(this->angle*3.141592653589793238463/180)) * 97;
-	}else if((int)this->angle<=90 && (int)this->angle>=0 && angle == 0 && this->y<y && this->angle!=angle){
+		this->x = next_x-(sin(this->angle*PI/180)) * 100;
+		this->y = this->w_y+(cos(this->angle*PI/180)) * 97;
+	}else if((int)this->angle<=90 && (int)this->angle>=0 && next_dir == 0 && this->y<next_y && this->angle!=next_dir){
 		this->angle -= increment;
-		this->x = x-(sin(this->angle*3.141592653589793238463/180)) * 100;
-		this->y = w_y+(cos(this->angle*3.141592653589793238463/180)) * 101;
-	}else if((int)this->angle>=90 && (int)this->angle<=180 && angle == 180 && this->y<y && (int)this->angle!=angle){
+		this->x = next_x-(sin(this->angle*PI/180)) * 100;
+		this->y = this->w_y+(cos(this->angle*PI/180)) * 101;
+	}else if((int)this->angle>=90 && (int)this->angle<=180 && next_dir == 180 && this->y<next_y && (int)this->angle!=next_dir){
 		this->angle += increment;
-		this->x = x+(sin(this->angle*3.141592653589793238463/180)) * 98;
-		this->y = w_y-(cos(this->angle*3.141592653589793238463/180)) * 101;
-	}else if((int)this->angle>=0 && (int)this->angle<=90 && angle==90 && (this->x<x) && this->angle!=angle){
+		this->x = next_x+(sin(this->angle*PI/180)) * 98;
+		this->y = this->w_y-(cos(this->angle*PI/180)) * 101;
+	}else if((int)this->angle>=0 && (int)this->angle<=90 && next_dir==90 && (this->x<next_x) && this->angle!=next_dir){
 		this->angle += increment;
-		this->x = w_x+(sin(this->angle*3.141592653589793238463/180)) * 98;
-		this->y = y-(cos(this->angle*3.141592653589793238463/180)) * 97;
-	}else if((int)this->angle<=0 && (int)this->angle>=-90 && angle == 270 && (this->x<x) && this->angle!=angle){
+		this->x = this->w_x+(sin(this->angle*PI/180)) * 98;
+		this->y = next_y-(cos(this->angle*PI/180)) * 97;
+	}else if((int)this->angle<=0 && (int)this->angle>=-90 && next_dir == 270 && (this->x<next_x) && this->angle!=next_dir){
 		this->angle -= increment;
-		this->x = w_x-(sin(this->angle*3.141592653589793238463/180)) * 98;
-		this->y = y+(cos(this->angle*3.141592653589793238463/180)) * 97;
-	}else if((int)this->angle<=180 && (int)this->angle>=90 && angle == 90 && this->x>x && this->angle!=angle){
+		this->x = this->w_x-(sin(this->angle*PI/180)) * 98;
+		this->y = next_y+(cos(this->angle*PI/180)) * 97;
+	}else if((int)this->angle<=180 && (int)this->angle>=90 && next_dir == 90 && this->x>next_x && this->angle!=next_dir){
 		this->angle -= increment;
-		this->x = w_x-(sin(this->angle*3.141592653589793238463/180)) * 100;
-		this->y = y+(cos(this->angle*3.141592653589793238463/180)) * 97;
-	}else if((int)this->angle>=180 && (int)this->angle<=270 && angle == 270 && this->x>x && this->angle!=angle){
+		this->x = this->w_x-(sin(this->angle*PI/180)) * 100;
+		this->y = next_y+(cos(this->angle*PI/180)) * 97;
+	}else if((int)this->angle>=180 && (int)this->angle<=270 && next_dir == 270 && this->x>next_x && this->angle!=next_dir){
 		this->angle += increment;
-		this->x = w_x+(sin(this->angle*3.141592653589793238463/180)) * 100;
-		this->y = y-(cos(this->angle*3.141592653589793238463/180)) * 97;
-	}else if((int)this->angle%360==angle){
-		if((int)angle%360==0)
+		this->x = this->w_x+(sin(this->angle*PI/180)) * 100;
+		this->y = next_y-(cos(this->angle*PI/180)) * 97;
+	}else if((int)this->angle%360==next_dir){
+		if((int)next_dir%360==0)
 			this->x+=increment;
-		else if(angle==180)
+		else if(next_dir==180)
 			this->x-=increment;
-		else if(angle==90)
+		else if(next_dir==90)
 			this->y+=increment;
-		else if(angle==270)
+		else if(next_dir==270)
 			this->y-=increment;
 	}
 	
 	
 	sprite.setPosition(this->x, this->y);
 	sprite.setRotation(this->angle);
-	window.draw(sprite);*/
+	window.draw(sprite);
 }
 
 void Bus::getPosition(float &x, float &y){
@@ -867,6 +901,8 @@ int main()
 	srand(time(NULL)); //For real randomization 
 	sf::RenderWindow window(sf::VideoMode(1195,1195), "Traffic Simulator"); // The window size-name 
 	Car car[6] = {Car(car1, 118, 218, 270, 1), Car(car2, 4*239+20, 121, 0, 1), Car(car3, 118, 4*239+20, 270, 1), Car(car4, 4*239+118, 4*239+20, 270, 1), Car(car5, 218, 2*239+121, 0, 1), Car(car6, 4*239+20, 2*239+121, 180, 1)};
+	Bus buses[2] = {Bus(239*2+20, 121, 0, 1), Bus(239*2+20, 239*4+121, 180, 1)};
+	BusStop stops[8] = {BusStop(2*239+218,121,0),BusStop(4*239+118, 239+20, 90),BusStop(2*239+218, 2*239+121, 180),BusStop(2*239+118,3*239+172,90),BusStop(118,3*239+172,270),BusStop(118,218,270),BusStop(2*239+118,218,90),BusStop(4*239+118,4*239+20,270)};
 	float w_x[6],w_y[6];
 	TrafficLight* l1 = new TrafficLight(530,647,90,Red); //middle left
 	TrafficLight* l2 = new TrafficLight(547,532,180,Red); //middle top
@@ -900,13 +936,17 @@ int main()
 		Waypoint arr[48] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,-1,-1,-1), Waypoint(Right,SH,1,2,0,1,-1,-1), Waypoint(Right,SH,1,2,1,-1,-1,-1),Waypoint(Right,TT,1,3,0,1,2,-1),Waypoint(Down,TT,1,3,1,-1,-1,-1),Waypoint(Right,TT,1,3,2,-1,-1,-1),Waypoint(Right,SH,1,4,0,1,-1,-1), Waypoint(Right,SH,1,4,1,4,-1,-1),Waypoint(Right,CTR,1,5,0,1,-1,-1), Waypoint(Down,CTR,1,5,1,-1,-1,-1),Waypoint(Up,SV,2,1,0,1,-1,-1), Waypoint(Up,SV,2,1,1,-1,-1,-1),Waypoint(Down,SV,2,3,0,1,-1,-1), Waypoint(Down,SV,2,3,1,-1,-1,-1),Waypoint(Down,SV,2,5,0,1,-1,-1), Waypoint(Down,SV,2,5,1,-1,-1,-1),Waypoint(Up,TL,3,1,0,-1,-1,-1),Waypoint(Right,TL,3,1,1,-1,-1,-1),Waypoint(Up,TL,3,1,2,0,1,-1), Waypoint(Right,SH,3,2,0,1,-1,-1), Waypoint(Right,SH,3,2,1,4,-1,-1),Waypoint(Right,C,3,3,0,3,-1,-1,l1), Waypoint(Down,C,3,3,1,3,-1,-1,l2),Waypoint(Left,C,3,3,2,3,-1,-1,l3), Waypoint(Down,C,3,3,3,-1,-1,-1), Waypoint(Left,SH,3,4,0,1,-1,-1), Waypoint(Left,SH,3,4,1,4,-1,-1),Waypoint(Down,TR,3,5,0,1,-1,-1,l4),Waypoint(Left,TR,3,5,1,-1,-1,-1),Waypoint(Up,TR,3,5,2,1,-1,-1,l5),Waypoint(Up,SV,4,1,0,1,-1,-1), Waypoint(Up,SV,4,1,1,-1,-1,-1),Waypoint(Down,SV,4,3,0,1,-1,-1), Waypoint(Down,SV,4,3,1,-1,-1,-1),Waypoint(Up,SV,4,5,0,1,-1,-1), Waypoint(Up,SV,4,5,1,-1,-1,-1),Waypoint(Up,CBL,5,1,0,-1,-1,-1), Waypoint(Left,CBL,5,1,1,0,-1,-1), Waypoint(Left,SH,5,2,0,1,-1,-1), Waypoint(Left,SH,5,2,1,4,-1,-1),Waypoint(Left,TB,5,3,0,-1,-1,-1),Waypoint(Down,TB,5,3,1,0,2,-1),Waypoint(Right,TB,5,3,2,-1,-1,-1), Waypoint(Right,SH,5,4,0,1,-1,-1), Waypoint(Right,SH,5,4,1,4,-1,-1),Waypoint(Right,CBR,5,5,0,1,-1,-1), Waypoint(Up,CBR,5,5,1,-1,-1,-1)};
 		
 		//Some variables for further usage
-		float x[6],y[6],x2,y2,dir,next_x[6],next_y[6],next_dir[6];
+		float x[6],y[6],x2,y2,dir,next_x[6],next_y[6],next_dir[6], bx[2], by[2];
 		int col,row,idx;
 		for(int i=0;i<6;i++){
 			car[i].getPosition(x[i],y[i]);
 			car[i].increment=1;
 		}
-		
+		for(int i=0;i<2;i++){
+			buses[i].getPosition(bx[i],by[i]);
+			buses[i].increment=1;
+		}
+
 		// Every roadtile in our road
 		 RoadTile r1(CTL,1,1);
 		 RoadTile r2(SH,1,2);
@@ -966,6 +1006,11 @@ int main()
 			arr[i].draw(window);
 		}
 		
+		for(int i=0 ; i<8 ; i++)
+		{
+			stops[i].draw(window);
+		}
+		
 		//This part finds which waypoint the car stands now for determining local waypoint and use that waypoints functions.(For first part)
 		//The speed reduction part is also added for the state of the traffic light in second part
 		
@@ -1005,6 +1050,107 @@ int main()
 					car[k].increment = 0;	
 				}
 			}
+			for(int k=0; k<2; k++){
+				if(x[i]==bx[k] && abs(y[i]-by[k])<80){
+					int kk = (y[i]-by[k])/abs(y[i]-by[k]);
+					switch((int)buses[k].next_dir){
+						case Up:
+							cout << "UP" << endl;
+							if(kk==-1){
+								buses[k].increment=0;
+							}
+							else{
+								car[i].increment = 0;
+							}
+							break;
+						case Down:
+							cout << "DOWN" << endl;
+							if(kk==-1){
+								car[i].increment = 0;	
+							}
+							else{
+								buses[k].increment=0;
+							}
+							break;
+						default:
+							break;
+					}
+				}else if(y[i]==by[k] && abs(x[i]-bx[k])<80){
+					int kk = (x[i]-bx[k])/abs(x[i]-bx[k]);
+					switch((int)buses[k].next_dir){
+						case Left:
+							cout << "LEFT" << endl;
+							if(kk==-1){
+								buses[k].increment=0;
+							}
+							else{
+								car[i].increment = 0;	
+							}
+							break;
+						case Right:
+							cout << "RIGHT" << endl;
+							if(kk==-1){
+								car[i].increment = 0;	
+							}
+							else{
+								buses[k].increment=0;
+							}
+							break;
+						default:
+							break;
+					}
+				}
+			}
+		}
+		
+		if(bx[0]==bx[1] && abs(y[0]-by[1])<80){
+					int kk = (by[0]-by[1])/abs(by[0]-by[1]);
+					switch((int)buses[1].next_dir){
+						case Up:
+							cout << "UP" << endl;
+							if(kk==-1){
+								buses[1].increment=0;
+							}
+							else{
+								buses[0].increment = 0;
+							}
+							break;
+						case Down:
+							cout << "DOWN" << endl;
+							if(kk==-1){
+								buses[0].increment = 0;	
+							}
+							else{
+								buses[1].increment=0;
+							}
+							break;
+						default:
+							break;
+					}
+		}else if(y[0]==by[1] && abs(x[0]-bx[1])<80){
+					int kk = (bx[0]-bx[1])/abs(bx[0]-bx[1]);
+					switch((int)buses[1].next_dir){
+						case Left:
+							cout << "LEFT" << endl;
+							if(kk==-1){
+								buses[1].increment=0;
+							}
+							else{
+								buses[0].increment = 0;	
+							}
+							break;
+						case Right:
+							cout << "RIGHT" << endl;
+							if(kk==-1){
+								buses[0].increment = 0;	
+							}
+							else{
+								buses[1].increment=0;
+							}
+							break;
+						default:
+							break;
+					}
 		}
 		// Moving the cars
 		//Simulating the traffic lights 
@@ -1013,7 +1159,8 @@ int main()
 		for(int i=0;i<6;i++){
 			car[i].move2(window, arr);
 		}
-			 
+		buses[0].move2(window, arr);
+		buses[1].move2(window, arr);	 
 		//Update the display
 		window.display();		
 	}
