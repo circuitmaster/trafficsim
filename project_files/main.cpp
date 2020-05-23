@@ -79,6 +79,7 @@ class Vehicle{
 //The Car class
 class Car : public Vehicle{
 	private:
+		float next_x, next_y, w_x, w_y; 
 		tVehicleType t;
 		float x, y, angle;
 		bool origin_set;
@@ -86,6 +87,7 @@ class Car : public Vehicle{
 		sf::Sprite sprite;
 	
 	public:
+		float next_dir;
 		int increment;
 		Car(tVehicleType t, float x, float y, float angle, int inc);
 		void move(float &x, float &y, float &angle, sf::RenderWindow& window);
@@ -669,7 +671,7 @@ void Car::move(float &x, float &y, float &angle, sf::RenderWindow& window){
 // The defination of smooth move of car 
 void Car::move2(sf::RenderWindow& window, Waypoint arr[48]){
 	
-	float waypoint_x, waypoint_y, waypoint_dir, next_dir, w_x, w_y, next_x, next_y;
+	float waypoint_x, waypoint_y, waypoint_dir;
 	int col, row, idx;
 	
 	for(int j=0; j<48; j++){
@@ -685,11 +687,11 @@ void Car::move2(sf::RenderWindow& window, Waypoint arr[48]){
 				row = (int)(waypoint_y/239) + 1;
 				idx = arr[j].getNext();
 				if(idx<0){
-					next_dir = waypoint_dir;
+					this->next_dir = waypoint_dir;
 					break;
 				}
-				w_x = waypoint_x; 
-				w_y = waypoint_y;
+				this->w_x = waypoint_x; 
+				this->w_y = waypoint_y;
 				for(int k=0; k<48; k++){
 					int cl,rw;
 					float x_,y_,dir_;
@@ -697,15 +699,18 @@ void Car::move2(sf::RenderWindow& window, Waypoint arr[48]){
 					cl = (int)(x_/239) + 1; 
 					rw = (int)(y_/239) + 1;
 					if(arr[k].getIndex()==idx && cl==col && rw==row){
-						next_x = x_; 
-						next_y = y_;
-						next_dir = dir_;
+						this->next_x = x_; 
+						this->next_y = y_;
+						this->next_dir = dir_;
 						break;
 					}
 				}
 			}
 			
 	}
+	
+	//cout << next_dir << endl;
+	//cout << next_x << " " << next_y << endl;
 	
 	switch(int(this->angle)%360){
 		case 0:
@@ -725,46 +730,46 @@ void Car::move2(sf::RenderWindow& window, Waypoint arr[48]){
 			break;
 	}
 	
-	if((int)this->angle>=270 && (int)this->angle<=360 && angle==0 && (this->y>y) && this->angle!=angle){
+	if((int)this->angle>=270 && (int)this->angle<=360 && next_dir==0 && (this->y>next_y) && this->angle!=next_dir){
 		this->angle += increment;
 		this->x = next_x+(sin(this->angle*3.141592653589793238463/180)) * 100;
-		this->y = w_y-(cos(this->angle*3.141592653589793238463/180)) * 97;
-	}else if((int)this->angle<=270 && (int)this->angle>=180 && angle == 180 && this->y>y && this->angle!=angle){
+		this->y = this->w_y-(cos(this->angle*3.141592653589793238463/180)) * 97;
+	}else if((int)this->angle<=270 && (int)this->angle>=180 && next_dir == 180 && this->y>next_y && this->angle!=next_dir){
 		this->angle -= increment;
 		this->x = next_x-(sin(this->angle*3.141592653589793238463/180)) * 100;
-		this->y = w_y+(cos(this->angle*3.141592653589793238463/180)) * 97;
-	}else if((int)this->angle<=90 && (int)this->angle>=0 && angle == 0 && this->y<y && this->angle!=angle){
+		this->y = this->w_y+(cos(this->angle*3.141592653589793238463/180)) * 97;
+	}else if((int)this->angle<=90 && (int)this->angle>=0 && next_dir == 0 && this->y<next_y && this->angle!=next_dir){
 		this->angle -= increment;
 		this->x = next_x-(sin(this->angle*3.141592653589793238463/180)) * 100;
-		this->y = w_y+(cos(this->angle*3.141592653589793238463/180)) * 101;
-	}else if((int)this->angle>=90 && (int)this->angle<=180 && angle == 180 && this->y<y && (int)this->angle!=angle){
+		this->y = this->w_y+(cos(this->angle*3.141592653589793238463/180)) * 101;
+	}else if((int)this->angle>=90 && (int)this->angle<=180 && next_dir == 180 && this->y<next_y && (int)this->angle!=next_dir){
 		this->angle += increment;
 		this->x = next_x+(sin(this->angle*3.141592653589793238463/180)) * 98;
-		this->y = w_y-(cos(this->angle*3.141592653589793238463/180)) * 101;
-	}else if((int)this->angle>=0 && (int)this->angle<=90 && angle==90 && (this->x<x) && this->angle!=angle){
+		this->y = this->w_y-(cos(this->angle*3.141592653589793238463/180)) * 101;
+	}else if((int)this->angle>=0 && (int)this->angle<=90 && next_dir==90 && (this->x<next_x) && this->angle!=next_dir){
 		this->angle += increment;
-		this->x = w_x+(sin(this->angle*3.141592653589793238463/180)) * 98;
+		this->x = this->w_x+(sin(this->angle*3.141592653589793238463/180)) * 98;
 		this->y = next_y-(cos(this->angle*3.141592653589793238463/180)) * 97;
-	}else if((int)this->angle<=0 && (int)this->angle>=-90 && angle == 270 && (this->x<x) && this->angle!=angle){
+	}else if((int)this->angle<=0 && (int)this->angle>=-90 && next_dir == 270 && (this->x<next_x) && this->angle!=next_dir){
 		this->angle -= increment;
-		this->x = w_x-(sin(this->angle*3.141592653589793238463/180)) * 98;
+		this->x = this->w_x-(sin(this->angle*3.141592653589793238463/180)) * 98;
 		this->y = next_y+(cos(this->angle*3.141592653589793238463/180)) * 97;
-	}else if((int)this->angle<=180 && (int)this->angle>=90 && angle == 90 && this->x>x && this->angle!=angle){
+	}else if((int)this->angle<=180 && (int)this->angle>=90 && next_dir == 90 && this->x>next_x && this->angle!=next_dir){
 		this->angle -= increment;
-		this->x = w_x-(sin(this->angle*3.141592653589793238463/180)) * 100;
+		this->x = this->w_x-(sin(this->angle*3.141592653589793238463/180)) * 100;
 		this->y = next_y+(cos(this->angle*3.141592653589793238463/180)) * 97;
-	}else if((int)this->angle>=180 && (int)this->angle<=270 && angle == 270 && this->x>x && this->angle!=angle){
+	}else if((int)this->angle>=180 && (int)this->angle<=270 && next_dir == 270 && this->x>next_x && this->angle!=next_dir){
 		this->angle += increment;
-		this->x = w_x+(sin(this->angle*3.141592653589793238463/180)) * 100;
+		this->x = this->w_x+(sin(this->angle*3.141592653589793238463/180)) * 100;
 		this->y = next_y-(cos(this->angle*3.141592653589793238463/180)) * 97;
-	}else if((int)this->angle%360==angle){
-		if((int)angle%360==0)
+	}else if((int)this->angle%360==next_dir){
+		if((int)next_dir%360==0)
 			this->x+=increment;
-		else if(angle==180)
+		else if(next_dir==180)
 			this->x-=increment;
-		else if(angle==90)
+		else if(next_dir==90)
 			this->y+=increment;
-		else if(angle==270)
+		else if(next_dir==270)
 			this->y-=increment;
 	}
 	
@@ -963,48 +968,14 @@ int main()
 		
 		//This part finds which waypoint the car stands now for determining local waypoint and use that waypoints functions.(For first part)
 		//The speed reduction part is also added for the state of the traffic light in second part
-		/*for(int j=0; j<48; j++){
-			arr[j].getPosition(x2,y2,dir);
-			for(int i=0; i<6; i++){
-				if(x[i]==x2 && y[i]==y2){
-					if(arr[j].l->getState()==Red){   //Here it checks the traffic lights state
-						car[i].increment=0; 
-						break;
-					}else{
-						car[i].increment=1;
-					}
-					col = (int)(x2/239) + 1; 
-					row = (int)(y2/239) + 1;
-					idx = arr[j].getNext();
-					if(idx<0){
-						next_dir[i] = dir;
-						break;
-					}
-					w_x[i]=x2; 
-					w_y[i]=y2;
-					for(int k=0; k<48; k++){
-						int cl,rw;
-						float x_,y_,dir_;
-						arr[k].getPosition(x_,y_,dir_);
-						cl = (int)(x_/239) + 1; 
-						rw = (int)(y_/239) + 1;
-						if(arr[k].getIndex()==idx && cl==col && rw==row){
-							next_x[i] = x_; 
-							next_y[i] = y_;
-							next_dir[i] = dir_;
-							break;
-						}
-					}
-				}
-			}
-		}*/
+		
 		
 		//This part is checking if there are any collision between the cars , and if any , reduces the speed of the behind to zero
 		for(int i=0;i<6;i++){
 			for(int j=i+1;j<6;j++){
 				if(x[i]==x[j] && abs(y[i]-y[j])<80){
 					int k = (y[i]-y[j])/abs(y[i]-y[j]);
-					switch((int)next_dir[j]){
+					switch((int)car[j].next_dir){
 						case Up:
 							if(k==-1)k=j;
 							else k=i;
@@ -1019,7 +990,7 @@ int main()
 					car[k].increment = 0;	
 				}else if(y[i]==y[j] && abs(x[i]-x[j])<80){
 					int k = (x[i]-x[j])/abs(x[i]-x[j]);
-					switch((int)next_dir[j]){
+					switch((int)car[j].next_dir){
 						case Left:
 							if(k==-1)k=j;
 							else k=i;
