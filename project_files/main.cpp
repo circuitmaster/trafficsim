@@ -72,9 +72,21 @@ class Waypoint{
 		void draw(sf::RenderWindow& window);
 };
 
+class BusStop{
+	float x; //x coordinate of the bus stop
+    float y; //y coordinate of the bus stop
+    float dir; //direction of the bus stop (determines the orientation of the bus stop on the map)
+    sf::Texture texture; //texture for the bus stop
+    sf::Sprite sprite; //sprite for the bus stop
+    public:
+    	BusStop(float x, float y, float dir);
+    	void getPosition(float &x, float &y, float &dir);
+    	void draw(sf::RenderWindow& window);
+};
+
 class Vehicle{
 	public:
-		virtual void move2(sf::RenderWindow& window, Waypoint arr[48]) = 0;
+		virtual void move2(sf::RenderWindow& window, Waypoint arr[48], BusStop stops[8]) = 0;
 };
 
 //The Car class
@@ -92,7 +104,7 @@ class Car : public Vehicle{
 		int increment;
 		Car(tVehicleType t, float x, float y, float angle, int inc);
 		void move(float &x, float &y, float &angle, sf::RenderWindow& window);
-		void move2(sf::RenderWindow& window, Waypoint arr[48]);
+		void move2(sf::RenderWindow& window, Waypoint arr[48], BusStop stops[8]);
 		void getPosition(float &x, float &y);
 };
 
@@ -111,24 +123,10 @@ class Bus : public Vehicle{
 		float next_dir;
 		int increment;
 		Bus(float x, float y, float angle, int inc);
-		void move2(sf::RenderWindow& window, Waypoint arr[48]);
+		void move2(sf::RenderWindow& window, Waypoint arr[48], BusStop stops[8]);
 		void getPosition(float &x, float &y);
 		void addStop(int index);
 };
-
-class BusStop{
-	float x; //x coordinate of the bus stop
-    float y; //y coordinate of the bus stop
-    float dir; //direction of the bus stop (determines the orientation of the bus stop on the map)
-    sf::Texture texture; //texture for the bus stop
-    sf::Sprite sprite; //sprite for the bus stop
-    public:
-    	BusStop(float x, float y, float dir);
-    	void getPosition(float &x, float &y, float &dir);
-    	void draw(sf::RenderWindow& window);
-};
-
-
 
 //Defination of traffic light Linked-List class
 class TrafficLightGroup{
@@ -144,6 +142,7 @@ class TrafficLightGroup{
 };
 
 Bus::Bus(float x, float y, float angle, int inc){
+	currentStop = 0;
 	this->x = x;
 	this->y = y;
 	this->angle = angle;
@@ -667,7 +666,7 @@ void Car::move(float &x, float &y, float &angle, sf::RenderWindow& window){
 }
 
 // The defination of smooth move of car 
-void Car::move2(sf::RenderWindow& window, Waypoint arr[48]){
+void Car::move2(sf::RenderWindow& window, Waypoint arr[48], BusStop stops[8]){
 	
 	float waypoint_x, waypoint_y, waypoint_dir;
 	int col, row, idx;
@@ -769,17 +768,27 @@ void Car::move2(sf::RenderWindow& window, Waypoint arr[48]){
 			this->y-=increment;
 	}
 	
-	
 	sprite.setPosition(this->x, this->y);
 	sprite.setRotation(this->angle);
 	window.draw(sprite);
 	
 }
 
-void Bus::move2(sf::RenderWindow& window, Waypoint arr[48]){
+void Bus::move2(sf::RenderWindow& window, Waypoint arr[48], BusStop stops[8]){
 	float waypoint_x, waypoint_y, waypoint_dir;
 	int col, row, idx;
-	
+	float stopx, stopy, stopdir;
+	stops[this->stops[currentStop]].getPosition(stopx, stopy, stopdir);
+	cout << this->stops[currentStop] << endl;
+	if(this->x == stopx && this->y == stopy){
+		cout << "geldi" << endl;
+		if(currentStop == 5){
+			currentStop = 0; 
+		}else{
+			currentStop++;
+		}
+		stops[this->stops[currentStop]].getPosition(stopx, stopy, stopdir);
+	}
 	for(int j=0; j<48; j++){
 		arr[j].getPosition(waypoint_x, waypoint_y, waypoint_dir);
 			if(this->x == waypoint_x && this->y == waypoint_y){
@@ -798,19 +807,29 @@ void Bus::move2(sf::RenderWindow& window, Waypoint arr[48]){
 				}
 				this->w_x = waypoint_x; 
 				this->w_y = waypoint_y;
+				float min = 10000; 
 				for(int k=0; k<48; k++){
 					int cl,rw;
 					float x_,y_,dir_;
 					arr[k].getPosition(x_,y_,dir_);
 					cl = (int)(x_/239) + 1; 
 					rw = (int)(y_/239) + 1;
-					if(arr[k].getIndex()==idx && cl==col && rw==row){
-						this->next_x = x_; 
-						this->next_y = y_;
-						this->next_dir = dir_;
-						break;
+					if(idx == 3 && arr[k].getIndex() == 3 && cl==col && rw==row){
+							this->next_x = x_; 
+							this->next_y = y_;
+							this->next_dir = dir_;
+							break;
+					}else if(arr[k].getIndex()!=arr[j].getIndex() && cl==col && rw==row){
+						if(abs(x_ - stopx) + abs(y_ - stopy) < min){
+							this->next_x = x_; 
+							this->next_y = y_;
+							this->next_dir = dir_;
+							min = abs(x_ - stopx) + abs(y_ - stopy);
+							this->increment=1;
+						}
 					}
 				}
+				break;
 			}
 			
 	}
@@ -887,6 +906,12 @@ void Bus::getPosition(float &x, float &y){
 	y = this->y;
 }
 
+void BusStop::getPosition(float &x, float &y, float &dir){
+	x = this->x;
+	dir = this->dir;
+	y = this->y;
+}
+
 void Bus::addStop(int index){
 	this->stops.push_back(index);
 }
@@ -903,6 +928,19 @@ int main()
 	Car car[6] = {Car(car1, 118, 218, 270, 1), Car(car2, 4*239+20, 121, 0, 1), Car(car3, 118, 4*239+20, 270, 1), Car(car4, 4*239+118, 4*239+20, 270, 1), Car(car5, 218, 2*239+121, 0, 1), Car(car6, 4*239+20, 2*239+121, 180, 1)};
 	Bus buses[2] = {Bus(239*2+20, 121, 0, 1), Bus(239*2+20, 239*4+121, 180, 1)};
 	BusStop stops[8] = {BusStop(2*239+218,121,0),BusStop(4*239+118, 239+20, 90),BusStop(2*239+218, 2*239+121, 180),BusStop(2*239+118,3*239+172,90),BusStop(118,3*239+172,270),BusStop(118,218,270),BusStop(2*239+118,218,90),BusStop(4*239+118,4*239+20,270)};
+	
+	buses[0].addStop(0);
+	buses[0].addStop(1);
+	buses[0].addStop(2);
+	buses[0].addStop(3);
+	buses[0].addStop(5);
+	
+	buses[1].addStop(4);
+	buses[1].addStop(5);
+	buses[1].addStop(6);
+	buses[1].addStop(7);
+	buses[1].addStop(2);
+	
 	float w_x[6],w_y[6];
 	TrafficLight* l1 = new TrafficLight(530,647,90,Red); //middle left
 	TrafficLight* l2 = new TrafficLight(547,532,180,Red); //middle top
@@ -1157,10 +1195,10 @@ int main()
 		g1.simulate(1);
 		g2.simulate(1);
 		for(int i=0;i<6;i++){
-			car[i].move2(window, arr);
+			car[i].move2(window, arr, stops);
 		}
-		buses[0].move2(window, arr);
-		buses[1].move2(window, arr);	 
+		buses[0].move2(window, arr, stops);
+		buses[1].move2(window, arr, stops);	 
 		//Update the display
 		window.display();		
 	}
