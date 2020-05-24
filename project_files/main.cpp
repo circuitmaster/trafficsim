@@ -27,8 +27,7 @@ class RoadTile
 		
 	public: 
 		RoadTile(tRoadTileType t, int row , int col);
-		void draw(sf::RenderWindow& window); 
-		
+		void draw(sf::RenderWindow& window); 		
 };
 
 //Defination of traffic light class
@@ -176,6 +175,7 @@ BusStop::BusStop(float x, float y, float dir){
 	sf::FloatRect boundingBox = sprite.getGlobalBounds();
 	sprite.setOrigin(sf::Vector2f(boundingBox.width / 2, boundingBox.height / 2)); 
 	sprite.setRotation(dir+90);
+	sprite.setPosition(x, y);
 }
 
 
@@ -192,6 +192,9 @@ TrafficLight::TrafficLight(float x, float y, float dir, tLightState state){
 	this->dir = dir;
 	this->state=state;
 	next = NULL;
+	//Move car sprite to x,y position
+	this->sprite.setPosition(x, y);
+	this->sprite.setRotation(this->dir);
 }
 
 //Constructor of traffic light group class
@@ -216,6 +219,55 @@ RoadTile::RoadTile(tRoadTileType t, int row , int col){
 	x = (col-1)*239;
 	y= (row-1)*239;
 	this->t = t;
+	string path = "images/roadpieces/";
+ 	switch(t){
+ 		case CBL:
+ 			path+="corner-bottomleft.png";
+ 			break;
+ 		case CBR:
+ 			path+="corner-bottomright.png";
+ 			break;
+		case CTL:
+			path+="corner-topleft.png";
+			break;
+		case CTR:
+			path+="corner-topright.png";
+			break;
+		case C:
+			path+="cross.png";
+			break;
+		case SH:
+			path+="straight-horizontal.png";
+			break;
+		case SV:
+			path+="straight-vertical.png";
+			break;
+		case TB:
+			path+="t-bottom.png";
+			break;
+		case TL:
+			path+="t-left.png";
+			break;
+		case TR:
+			path+="t-right.png";
+			break;
+		case TT:
+			path+="t-top.png";
+			break;
+		default:
+			break;
+	}
+	
+ 	if (!this->texture.loadFromFile(path))
+	{
+		cout << "Could not find the image file" << endl;
+	}	
+ 	
+	 
+	this->sprite.setTexture(texture);
+	
+	 //Move car sprite to x,y position
+	this->sprite.setPosition(x, y);
 }
 
 //The constructor for vehicle
@@ -280,9 +332,6 @@ void TrafficLight::draw(sf::RenderWindow& window){
 	}else{
 		this->sprite.setTexture(greenTexture);
 	}
-	 //Move car sprite to x,y position
-	this->sprite.setPosition(x, y);
-	this->sprite.setRotation(this->dir);
 	//Draw the car sprite to screen
 	window.draw(this->sprite);
 }
@@ -321,56 +370,6 @@ void TrafficLightGroup::simulate(float timestep){
 
 // The defination of draw function for RoadTile class
 void RoadTile::draw(sf::RenderWindow& window){
- 	string path = "images/roadpieces/";
- 	switch(t){
- 		case CBL:
- 			path+="corner-bottomleft.png";
- 			break;
- 		case CBR:
- 			path+="corner-bottomright.png";
- 			break;
-		case CTL:
-			path+="corner-topleft.png";
-			break;
-		case CTR:
-			path+="corner-topright.png";
-			break;
-		case C:
-			path+="cross.png";
-			break;
-		case SH:
-			path+="straight-horizontal.png";
-			break;
-		case SV:
-			path+="straight-vertical.png";
-			break;
-		case TB:
-			path+="t-bottom.png";
-			break;
-		case TL:
-			path+="t-left.png";
-			break;
-		case TR:
-			path+="t-right.png";
-			break;
-		case TT:
-			path+="t-top.png";
-			break;
-		default:
-			break;
-	}
-	
- 	if (!this->texture.loadFromFile(path))
-	{
-		cout << "Could not find the image file" << endl;
-	}	
- 	
-	 
-	this->sprite.setTexture(texture);
-	
-	 //Move car sprite to x,y position
-	this->sprite.setPosition(x, y);
-	
 	//Draw the car sprite to screen
 	window.draw(this->sprite);
 }
@@ -386,29 +385,7 @@ Waypoint::Waypoint(tWayPointdir dir, tRoadTileType type, int row, int col, int i
 	this->next2 = next2;
 	this->next3 = next3;
 	this->l=l;
-}
-
-// Defination of getposition function for waypoint class
-void Waypoint::getPosition(float &x, float &y, float &dir){
-	x = this->x;
-	y = this->y;
-	dir = this->diir;
-}
-
-// Defination of getposition function for vehicle class
-void Car::getPosition(float &x, float &y){
-	x = this->x;
-	y = this->y;
-}
-
-void BusStop::draw(sf::RenderWindow& window){
-	this->sprite.setPosition(x, y);
-	window.draw(this->sprite);
-}
-
-// Defination of draw function for waypoint class
-void Waypoint::draw(sf::RenderWindow& window){
- 	string path = "images/waypoints/";
+	string path = "images/waypoints/";
  	switch(diir){
  		case Down:
  			path+="down.png";
@@ -566,11 +543,32 @@ void Waypoint::draw(sf::RenderWindow& window){
 	
 	 //Move car sprite to x,y position
 	this->sprite.setPosition(x, y);
-	
+}
+
+// Defination of getposition function for waypoint class
+void Waypoint::getPosition(float &x, float &y, float &dir){
+	x = this->x;
+	y = this->y;
+	dir = this->diir;
+}
+
+// Defination of getposition function for vehicle class
+void Car::getPosition(float &x, float &y){
+	x = this->x;
+	y = this->y;
+}
+
+void BusStop::draw(sf::RenderWindow& window){
+	window.draw(this->sprite);
+}
+
+// Defination of draw function for waypoint class
+void Waypoint::draw(sf::RenderWindow& window){
 	//Draw the car sprite to screen
 	window.draw(this->sprite);
 
 }
+
 // Defination of getnext function for waypoint class
 int Waypoint::getNext(){
 	int random;
@@ -706,7 +704,6 @@ void Car::move2(sf::RenderWindow& window, Waypoint arr[48], BusStop stops[8]){
 			
 	}
 	
-	
 	switch(int(this->angle)%360){
 		case 0:
 			this->angle = 0;
@@ -779,10 +776,10 @@ void Bus::move2(sf::RenderWindow& window, Waypoint arr[48], BusStop stops[8]){
 	int col, row, idx;
 	float stopx, stopy, stopdir;
 	stops[this->stops[currentStop]].getPosition(stopx, stopy, stopdir);
-	cout << this->stops[currentStop] << endl;
+	//cout << this->stops[currentStop] << endl;
 	if(this->x == stopx && this->y == stopy){
-		cout << "geldi" << endl;
-		if(currentStop == 5){
+		cout << currentStop <<"e geldi" << endl;
+		if(currentStop == 4){
 			currentStop = 0; 
 		}else{
 			currentStop++;
@@ -825,7 +822,6 @@ void Bus::move2(sf::RenderWindow& window, Waypoint arr[48], BusStop stops[8]){
 							this->next_y = y_;
 							this->next_dir = dir_;
 							min = abs(x_ - stopx) + abs(y_ - stopy);
-							this->increment=1;
 						}
 					}
 				}
@@ -928,6 +924,29 @@ int main()
 	Car car[6] = {Car(car1, 118, 218, 270, 1), Car(car2, 4*239+20, 121, 0, 1), Car(car3, 118, 4*239+20, 270, 1), Car(car4, 4*239+118, 4*239+20, 270, 1), Car(car5, 218, 2*239+121, 0, 1), Car(car6, 4*239+20, 2*239+121, 180, 1)};
 	Bus buses[2] = {Bus(239*2+20, 121, 0, 1), Bus(239*2+20, 239*4+121, 180, 1)};
 	BusStop stops[8] = {BusStop(2*239+218,121,0),BusStop(4*239+118, 239+20, 90),BusStop(2*239+218, 2*239+121, 180),BusStop(2*239+118,3*239+172,90),BusStop(118,3*239+172,270),BusStop(118,218,270),BusStop(2*239+118,218,90),BusStop(4*239+118,4*239+20,270)};
+
+	// Every roadtile in our road
+	RoadTile r1(CTL,1,1);
+    RoadTile r2(SH,1,2);
+	RoadTile r3(TT,1,3);
+	RoadTile r4(SH,1,4);
+	RoadTile r5(CTR,1,5); 
+	RoadTile r6(SV,2,1);
+	RoadTile r7(SV,2,3);
+	RoadTile r8(SV,2,5);
+	RoadTile r9(TL,3,1);
+	RoadTile r10(SH,3,2);
+	RoadTile r11(C,3,3);
+	RoadTile r12(SH,3,4);
+	RoadTile r13(TR,3,5);
+	RoadTile r14(SV,4,1);
+	RoadTile r15(SV,4,3);
+	RoadTile r16(SV,4,5);
+	RoadTile r17(CBL,5,1);
+	RoadTile r18(SH,5,2);
+	RoadTile r19(TB,5,3);
+	RoadTile r20(SH,5,4);
+	RoadTile r21(CBR,5,5);
 	
 	buses[0].addStop(0);
 	buses[0].addStop(1);
@@ -948,6 +967,9 @@ int main()
 	TrafficLight* l4 = new TrafficLight(1025,532,180,Red); //right top 
 	TrafficLight* l5 = new TrafficLight(1125,655,0,Red); //right down
 	
+	//Below is the array of every 48 waypoints
+	Waypoint arr[48] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,-1,-1,-1), Waypoint(Right,SH,1,2,0,1,-1,-1), Waypoint(Right,SH,1,2,1,-1,-1,-1),Waypoint(Right,TT,1,3,0,1,2,-1),Waypoint(Down,TT,1,3,1,-1,-1,-1),Waypoint(Right,TT,1,3,2,-1,-1,-1),Waypoint(Right,SH,1,4,0,1,-1,-1), Waypoint(Right,SH,1,4,1,4,-1,-1),Waypoint(Right,CTR,1,5,0,1,-1,-1), Waypoint(Down,CTR,1,5,1,-1,-1,-1),Waypoint(Up,SV,2,1,0,1,-1,-1), Waypoint(Up,SV,2,1,1,-1,-1,-1),Waypoint(Down,SV,2,3,0,1,-1,-1), Waypoint(Down,SV,2,3,1,-1,-1,-1),Waypoint(Down,SV,2,5,0,1,-1,-1), Waypoint(Down,SV,2,5,1,-1,-1,-1),Waypoint(Up,TL,3,1,0,-1,-1,-1),Waypoint(Right,TL,3,1,1,-1,-1,-1),Waypoint(Up,TL,3,1,2,0,1,-1), Waypoint(Right,SH,3,2,0,1,-1,-1), Waypoint(Right,SH,3,2,1,4,-1,-1),Waypoint(Right,C,3,3,0,3,-1,-1,l1), Waypoint(Down,C,3,3,1,3,-1,-1,l2),Waypoint(Left,C,3,3,2,3,-1,-1,l3), Waypoint(Down,C,3,3,3,-1,-1,-1), Waypoint(Left,SH,3,4,0,1,-1,-1), Waypoint(Left,SH,3,4,1,4,-1,-1),Waypoint(Down,TR,3,5,0,1,-1,-1,l4),Waypoint(Left,TR,3,5,1,-1,-1,-1),Waypoint(Up,TR,3,5,2,1,-1,-1,l5),Waypoint(Up,SV,4,1,0,1,-1,-1), Waypoint(Up,SV,4,1,1,-1,-1,-1),Waypoint(Down,SV,4,3,0,1,-1,-1), Waypoint(Down,SV,4,3,1,-1,-1,-1),Waypoint(Up,SV,4,5,0,1,-1,-1), Waypoint(Up,SV,4,5,1,-1,-1,-1),Waypoint(Up,CBL,5,1,0,-1,-1,-1), Waypoint(Left,CBL,5,1,1,0,-1,-1), Waypoint(Left,SH,5,2,0,1,-1,-1), Waypoint(Left,SH,5,2,1,4,-1,-1),Waypoint(Left,TB,5,3,0,-1,-1,-1),Waypoint(Down,TB,5,3,1,0,2,-1),Waypoint(Right,TB,5,3,2,-1,-1,-1), Waypoint(Right,SH,5,4,0,1,-1,-1), Waypoint(Right,SH,5,4,1,4,-1,-1),Waypoint(Right,CBR,5,5,0,1,-1,-1), Waypoint(Up,CBR,5,5,1,-1,-1,-1)};
+
 	TrafficLightGroup g1(200);
 	TrafficLightGroup g2(200);
 	
@@ -970,9 +992,6 @@ int main()
 		 //Clear window
 		 window.clear(sf::Color::White); 
 		
-		//Below is the array of every 48 waypoints
-		Waypoint arr[48] = {Waypoint(Up,CTL,1,1,0,1,-1,-1), Waypoint(Right,CTL,1,1,1,-1,-1,-1), Waypoint(Right,SH,1,2,0,1,-1,-1), Waypoint(Right,SH,1,2,1,-1,-1,-1),Waypoint(Right,TT,1,3,0,1,2,-1),Waypoint(Down,TT,1,3,1,-1,-1,-1),Waypoint(Right,TT,1,3,2,-1,-1,-1),Waypoint(Right,SH,1,4,0,1,-1,-1), Waypoint(Right,SH,1,4,1,4,-1,-1),Waypoint(Right,CTR,1,5,0,1,-1,-1), Waypoint(Down,CTR,1,5,1,-1,-1,-1),Waypoint(Up,SV,2,1,0,1,-1,-1), Waypoint(Up,SV,2,1,1,-1,-1,-1),Waypoint(Down,SV,2,3,0,1,-1,-1), Waypoint(Down,SV,2,3,1,-1,-1,-1),Waypoint(Down,SV,2,5,0,1,-1,-1), Waypoint(Down,SV,2,5,1,-1,-1,-1),Waypoint(Up,TL,3,1,0,-1,-1,-1),Waypoint(Right,TL,3,1,1,-1,-1,-1),Waypoint(Up,TL,3,1,2,0,1,-1), Waypoint(Right,SH,3,2,0,1,-1,-1), Waypoint(Right,SH,3,2,1,4,-1,-1),Waypoint(Right,C,3,3,0,3,-1,-1,l1), Waypoint(Down,C,3,3,1,3,-1,-1,l2),Waypoint(Left,C,3,3,2,3,-1,-1,l3), Waypoint(Down,C,3,3,3,-1,-1,-1), Waypoint(Left,SH,3,4,0,1,-1,-1), Waypoint(Left,SH,3,4,1,4,-1,-1),Waypoint(Down,TR,3,5,0,1,-1,-1,l4),Waypoint(Left,TR,3,5,1,-1,-1,-1),Waypoint(Up,TR,3,5,2,1,-1,-1,l5),Waypoint(Up,SV,4,1,0,1,-1,-1), Waypoint(Up,SV,4,1,1,-1,-1,-1),Waypoint(Down,SV,4,3,0,1,-1,-1), Waypoint(Down,SV,4,3,1,-1,-1,-1),Waypoint(Up,SV,4,5,0,1,-1,-1), Waypoint(Up,SV,4,5,1,-1,-1,-1),Waypoint(Up,CBL,5,1,0,-1,-1,-1), Waypoint(Left,CBL,5,1,1,0,-1,-1), Waypoint(Left,SH,5,2,0,1,-1,-1), Waypoint(Left,SH,5,2,1,4,-1,-1),Waypoint(Left,TB,5,3,0,-1,-1,-1),Waypoint(Down,TB,5,3,1,0,2,-1),Waypoint(Right,TB,5,3,2,-1,-1,-1), Waypoint(Right,SH,5,4,0,1,-1,-1), Waypoint(Right,SH,5,4,1,4,-1,-1),Waypoint(Right,CBR,5,5,0,1,-1,-1), Waypoint(Up,CBR,5,5,1,-1,-1,-1)};
-		
 		//Some variables for further usage
 		float x[6],y[6],x2,y2,dir,next_x[6],next_y[6],next_dir[6], bx[2], by[2];
 		int col,row,idx;
@@ -984,52 +1003,31 @@ int main()
 			buses[i].getPosition(bx[i],by[i]);
 			buses[i].increment=1;
 		}
-
-		// Every roadtile in our road
-		 RoadTile r1(CTL,1,1);
-		 RoadTile r2(SH,1,2);
-		 RoadTile r3(TT,1,3);
-		 RoadTile r4(SH,1,4);
-		 RoadTile r5(CTR,1,5); 
-		 RoadTile r6(SV,2,1);
-		 RoadTile r7(SV,2,3);
-		 RoadTile r8(SV,2,5);
-		 RoadTile r9(TL,3,1);
-		 RoadTile r10(SH,3,2);
-		 RoadTile r11(C,3,3);
-		 RoadTile r12(SH,3,4);
-		 RoadTile r13(TR,3,5);
-		 RoadTile r14(SV,4,1);
-		 RoadTile r15(SV,4,3);
-		 RoadTile r16(SV,4,5);
-		 RoadTile r17(CBL,5,1);
-		 RoadTile r18(SH,5,2);
-		 RoadTile r19(TB,5,3);
-		 RoadTile r20(SH,5,4);
-		 RoadTile r21(CBR,5,5);
-		 
+		
 		 // For drawing every roadtile in our road
-		 r1.draw(window);
-		 r2.draw(window);
-		 r3.draw(window);
-		 r4.draw(window);
-		 r5.draw(window);
-		 r6.draw(window);
-		 r7.draw(window);
-	     r8.draw(window);
-	     r9.draw(window);
-		 r10.draw(window);
-		 r11.draw(window);
-		 r12.draw(window);
-		 r13.draw(window);
-		 r14.draw(window);
-		 r15.draw(window);
-		 r16.draw(window);
-		 r17.draw(window);
-		 r18.draw(window);
-		 r19.draw(window);
-		 r20.draw(window);
-		 r21.draw(window);
+		 
+		r1.draw(window);
+		r2.draw(window);
+		r3.draw(window);
+		r4.draw(window);
+		r5.draw(window);
+		r6.draw(window);
+		r7.draw(window);
+		r8.draw(window);
+		r9.draw(window);
+		r10.draw(window);
+		r11.draw(window);
+		r12.draw(window);
+		r13.draw(window);
+		r14.draw(window);
+		r15.draw(window);
+		r16.draw(window);
+		r17.draw(window);
+		r18.draw(window);
+		r19.draw(window);
+		r20.draw(window);
+		r21.draw(window); 
+		 
 		 // For drawing every traffic light in our road
 		 
 		 l1->draw(window);
@@ -1093,7 +1091,7 @@ int main()
 					int kk = (y[i]-by[k])/abs(y[i]-by[k]);
 					switch((int)buses[k].next_dir){
 						case Up:
-							cout << "UP" << endl;
+							//cout << "UP" << endl;
 							if(kk==-1){
 								buses[k].increment=0;
 							}
@@ -1102,7 +1100,7 @@ int main()
 							}
 							break;
 						case Down:
-							cout << "DOWN" << endl;
+							//cout << "DOWN" << endl;
 							if(kk==-1){
 								car[i].increment = 0;	
 							}
@@ -1117,7 +1115,7 @@ int main()
 					int kk = (x[i]-bx[k])/abs(x[i]-bx[k]);
 					switch((int)buses[k].next_dir){
 						case Left:
-							cout << "LEFT" << endl;
+							//cout << "LEFT" << endl;
 							if(kk==-1){
 								buses[k].increment=0;
 							}
@@ -1126,7 +1124,7 @@ int main()
 							}
 							break;
 						case Right:
-							cout << "RIGHT" << endl;
+							//cout << "RIGHT" << endl;
 							if(kk==-1){
 								car[i].increment = 0;	
 							}
@@ -1145,7 +1143,7 @@ int main()
 					int kk = (by[0]-by[1])/abs(by[0]-by[1]);
 					switch((int)buses[1].next_dir){
 						case Up:
-							cout << "UP" << endl;
+							//cout << "UP" << endl;
 							if(kk==-1){
 								buses[1].increment=0;
 							}
@@ -1154,7 +1152,7 @@ int main()
 							}
 							break;
 						case Down:
-							cout << "DOWN" << endl;
+							//cout << "DOWN" << endl;
 							if(kk==-1){
 								buses[0].increment = 0;	
 							}
@@ -1169,7 +1167,7 @@ int main()
 					int kk = (bx[0]-bx[1])/abs(bx[0]-bx[1]);
 					switch((int)buses[1].next_dir){
 						case Left:
-							cout << "LEFT" << endl;
+							//cout << "LEFT" << endl;
 							if(kk==-1){
 								buses[1].increment=0;
 							}
@@ -1178,7 +1176,7 @@ int main()
 							}
 							break;
 						case Right:
-							cout << "RIGHT" << endl;
+							//cout << "RIGHT" << endl;
 							if(kk==-1){
 								buses[0].increment = 0;	
 							}
@@ -1200,7 +1198,8 @@ int main()
 		buses[0].move2(window, arr, stops);
 		buses[1].move2(window, arr, stops);	 
 		//Update the display
-		window.display();		
+		window.display();	
+		sf::sleep(sf::seconds(0.01f));	
 	}
 	return 0;
 }
