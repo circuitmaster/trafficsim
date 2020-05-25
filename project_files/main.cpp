@@ -1139,7 +1139,7 @@ int main()
 			}
 		}
 		
-		if(bx[0]==bx[1] && abs(y[0]-by[1])<80){
+		if(bx[0]==bx[1] && abs(by[0]-by[1])<80){
 					int kk = (by[0]-by[1])/abs(by[0]-by[1]);
 					switch((int)buses[1].next_dir){
 						case Up:
@@ -1163,7 +1163,7 @@ int main()
 						default:
 							break;
 					}
-		}else if(y[0]==by[1] && abs(x[0]-bx[1])<80){
+		}else if(by[0]==by[1] && abs(bx[0]-bx[1])<80){
 					int kk = (bx[0]-bx[1])/abs(bx[0]-bx[1]);
 					switch((int)buses[1].next_dir){
 						case Left:
