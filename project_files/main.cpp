@@ -71,6 +71,7 @@ class Waypoint{
 		void draw(sf::RenderWindow& window);
 };
 
+//Defination of busstop class
 class BusStop{
 	float x; //x coordinate of the bus stop
     float y; //y coordinate of the bus stop
@@ -83,6 +84,7 @@ class BusStop{
     	void draw(sf::RenderWindow& window);
 };
 
+//Defination of abstract vehicle class 
 class Vehicle{
 	public:
 		virtual void move2(sf::RenderWindow& window, Waypoint arr[48], BusStop stops[8]) = 0;
@@ -140,6 +142,7 @@ class TrafficLightGroup{
 		void simulate(float timestep) ;
 };
 
+//Bus constructor
 Bus::Bus(float x, float y, float angle, int inc){
 	currentStop = 0;
 	this->x = x;
@@ -162,6 +165,7 @@ Bus::Bus(float x, float y, float angle, int inc){
 	sprite.setRotation(angle);
 }
 
+//Busstop constructor
 BusStop::BusStop(float x, float y, float dir){
 	this->x = x;
 	this->y = y;
@@ -558,6 +562,7 @@ void Car::getPosition(float &x, float &y){
 	y = this->y;
 }
 
+//Defination of BusStop's draw function 
 void BusStop::draw(sf::RenderWindow& window){
 	window.draw(this->sprite);
 }
@@ -771,6 +776,7 @@ void Car::move2(sf::RenderWindow& window, Waypoint arr[48], BusStop stops[8]){
 	
 }
 
+//The move function for Bus 
 void Bus::move2(sf::RenderWindow& window, Waypoint arr[48], BusStop stops[8]){
 	float waypoint_x, waypoint_y, waypoint_dir;
 	int col, row, idx;
@@ -778,7 +784,6 @@ void Bus::move2(sf::RenderWindow& window, Waypoint arr[48], BusStop stops[8]){
 	stops[this->stops[currentStop]].getPosition(stopx, stopy, stopdir);
 	//cout << this->stops[currentStop] << endl;
 	if(this->x == stopx && this->y == stopy){
-		cout << currentStop <<"e geldi" << endl;
 		if(currentStop == 4){
 			currentStop = 0; 
 		}else{
@@ -897,21 +902,25 @@ void Bus::move2(sf::RenderWindow& window, Waypoint arr[48], BusStop stops[8]){
 	window.draw(sprite);
 }
 
+//Defination of getpozition function for bus
 void Bus::getPosition(float &x, float &y){
 	x = this->x;
 	y = this->y;
 }
 
+//Defination of getpozition function for busstop
 void BusStop::getPosition(float &x, float &y, float &dir){
 	x = this->x;
 	dir = this->dir;
 	y = this->y;
 }
 
+//Defination of addStop function for bus
 void Bus::addStop(int index){
 	this->stops.push_back(index);
 }
 
+//Getting index of waypoint 
 int Waypoint::getIndex(){
 	return this->idx; 
 }
@@ -948,6 +957,7 @@ int main()
 	RoadTile r20(SH,5,4);
 	RoadTile r21(CBR,5,5);
 	
+	// Adding the indexes of busStops to their respective busses 
 	buses[0].addStop(0);
 	buses[0].addStop(1);
 	buses[0].addStop(2);
@@ -1051,7 +1061,7 @@ int main()
 		//The speed reduction part is also added for the state of the traffic light in second part
 		
 		
-		//This part is checking if there are any collision between the cars , and if any , reduces the speed of the behind to zero
+		//This part is checking if there are any collision between the cars and busses , and if any , reduces the speed of the behind to zero
 		for(int i=0;i<6;i++){
 			for(int j=i+1;j<6;j++){
 				if(x[i]==x[j] && abs(y[i]-y[j])<80){
@@ -1190,6 +1200,7 @@ int main()
 		}
 		// Moving the cars
 		//Simulating the traffic lights 
+		//Moving the busses 
 		g1.simulate(1);
 		g2.simulate(1);
 		for(int i=0;i<6;i++){
